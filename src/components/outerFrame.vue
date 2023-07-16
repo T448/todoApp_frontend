@@ -8,6 +8,7 @@
                         <img src="../assets/icons8-notification-50.png" class='sideButton' @click="openNotification" />
                         <img src="../assets/icons8-male-user-50.png" class='sideButton' @click="openUser" />
                         <img src="../assets/icons8-search-50.png" class='sideButton' @click="openSearch" />
+                        <button @click="test">テスト用</button>
                     </div>
                     <div>
                         <img src="../assets/icons8-settings-50.png" class='sideButton' @click="openSettings" />
@@ -29,6 +30,7 @@
 <script  lang="ts">
 import StretchableSidebar from './StretchableSidebar.vue'
 import SidebarBorder from './SidebarBorder.vue'
+import axios from 'axios'
 const TOGGLE_BTN_WIDTH = 35
 const DEFAULT_SIDEBAR_WIDTH = 0.2
 
@@ -135,6 +137,9 @@ export default {
         },
         logout() {
             console.log('logout');
+        },
+        test() {
+            axios.post('http://localhost:8080/hello3', { email: "amazon@gmail.com", id: "something" }, { withCredentials: true }).then((res) => console.log(res));
         }
     }
 }
