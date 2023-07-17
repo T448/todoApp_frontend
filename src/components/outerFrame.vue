@@ -67,8 +67,18 @@ export default {
         }
     },
     mounted() {
-        this.setScreenData()
-        this.addResizeEvent()
+        this.setScreenData();
+        this.addResizeEvent();
+        axios
+            .post("http://localhost:8080/api/session", { "sessionID": this.$cookies.get("sessionID") }, { withCredentials: true })
+            .then(res => {
+                if (res.status !== 200) {
+                    this.$router.push('/app');
+                }
+            }).catch(error => {
+                console.log(error.response.status);
+                this.$router.push('/app');
+            });
     },
     beforeDestroy() {
         this.removeResizeEvent()
