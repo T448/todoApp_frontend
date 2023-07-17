@@ -15,7 +15,7 @@ const callback: CallbackTypes.CredentialCallback = (response) => {
 
     const res: any = decodeCredential(response.credential);
     axios
-        .post("http://localhost:8080/login", { email: res.email, name: res.name }, { withCredentials: true })
+        .post("http://localhost:8080/api/login", { email: res.email, name: res.name }, { withCredentials: true })
         .then(res => {
             if (res.data.sessionID) {
                 $cookies.set("sessionID", res.data.sessionID)
