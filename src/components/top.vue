@@ -2,7 +2,7 @@
 import type { CallbackTypes } from "vue3-google-login";
 import { decodeCredential } from "vue3-google-login";
 import { useRouter } from 'vue-router';
-import cryptoRandomString from 'crypto-random-string';
+import axios from "axios";
 
 const router = useRouter()
 
@@ -12,13 +12,20 @@ const callback: CallbackTypes.CredentialCallback = (response) => {
     console.log("Credential JWT string", response);
     console.log("Credential JWT string", response.credential);
     console.log(decodeCredential(response.credential));
-    const res = decodeCredential(response.credential);
-    const sessionID = cryptoRandomString({ length: 32 });;
-    console.log($cookies.set('email', res.email));
-    console.log($cookies.set('sessionID', sessionID));
-    router.push({ name: 'outerFrame' });
-};
 
+    const res: any = decodeCredential(response.credential);
+    axios
+        .post("http://localhost:8080/login", { email: res.email, name: res.name }, { withCredentials: true })
+        .then(res => {
+            if (res.data.sessionID) {
+                $cookies.set("sessionID", res.data.sessionID)
+                router.push({ name: 'outerFrame' });
+            } else {
+                alert("不正なログイン");
+            }
+        })
+        .catch(() => { alert('不正なログイン') });;
+};
 </script>
 
 <template>
