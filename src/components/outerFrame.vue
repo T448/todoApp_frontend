@@ -69,16 +69,6 @@ export default {
     mounted() {
         this.setScreenData();
         this.addResizeEvent();
-        axios
-            .post("http://localhost:8080/api/session", { "sessionID": this.$cookies.get("sessionID") }, { withCredentials: true })
-            .then(res => {
-                if (res.status !== 200) {
-                    this.$router.push('/app');
-                }
-            }).catch(error => {
-                console.log(error.response.status);
-                this.$router.push('/app');
-            });
     },
     beforeDestroy() {
         this.removeResizeEvent()
@@ -149,7 +139,13 @@ export default {
             console.log('logout');
         },
         test() {
-            axios.post('http://localhost:8080/hello3', { email: "amazon@gmail.com", id: "something" }, { withCredentials: true }).then((res) => console.log(res));
+            console.log("test");
+            axios
+                .post('http://localhost:8080/api/hoge', {}, { withCredentials: true })
+                .catch(error => {
+                    console.log(error.response.status);
+                    this.$router.push('/app');
+                });;
         }
     }
 }

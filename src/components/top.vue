@@ -19,12 +19,12 @@ const callback: CallbackTypes.CredentialCallback = (response) => {
         .then(res => {
             if (res.data.sessionID) {
                 $cookies.set("sessionID", res.data.sessionID)
-                router.push({ name: 'outerFrame' });
+                router.push({ name: 'main' });
             } else {
-                alert("不正なログイン");
+                alert("不正なログイン1");
             }
         })
-        .catch(() => { alert('不正なログイン') });;
+        .catch(() => { alert('不正なログイン2') });;
 };
 </script>
 
