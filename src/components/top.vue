@@ -35,8 +35,8 @@ const callback: CallbackTypes.CredentialCallback = (response) => {
         </h1>
         <GoogleLogin :callback="callback" prompt auto-login />
     </header>
-    <div id="beforeLogin">
-
+    <div id="beforeLogin" style="padding-top:60px;">
+        <img src="/src/assets/undraw_world_re_768g.svg">
     </div>
 </template>
 
@@ -47,8 +47,8 @@ const callback: CallbackTypes.CredentialCallback = (response) => {
     width: 100%;
     display: flex;
     justify-content: space-between;
+    height: 50px;
     /* display: flex;
-    height: 60px;
     left: 0;
     top: 0;
     margin: 0;
