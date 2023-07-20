@@ -29,14 +29,15 @@ const callback: CallbackTypes.CredentialCallback = (response) => {
 </script>
 
 <template>
-    <header id="beforeLoginHeader">
+    <div id="beforeLoginHeader">
         <h1 style="color: white;padding: 0px;margin: 0px;box-shadow: 5px;">
             todoApp
         </h1>
         <GoogleLogin :callback="callback" prompt auto-login />
-    </header>
-    <div id="beforeLogin" style="padding-top:60px;">
-        <img src="/src/assets/undraw_world_re_768g.svg">
+    </div>
+    <div id="beforeLogin" style="vertical-align: center;">
+        <img src="/src/assets/undraw_world_re_768g.svg"
+            style="max-height:500px;margin-top: 60px;background-color: #191919;">
     </div>
 </template>
 
