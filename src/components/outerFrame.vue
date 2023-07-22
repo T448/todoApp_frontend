@@ -3,6 +3,7 @@ import StretchableSidebar from './StretchableSidebar.vue'
 import SidebarBorder from './SidebarBorder.vue'
 import { useRouter } from 'vue-router';
 import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
+import axios from 'axios';
 
 const router = useRouter()
 
@@ -80,13 +81,12 @@ const logout = () => {
 }
 const test = () => {
     console.log("test");
-    // axios
-    //     .post('http://localhost:8080/api/hoge', {}, { withCredentials: true })
-    //     .catch(error => {
-    //         console.log(error.response.status);
-    //         this.$router.push('/app');
-    //     });;
-    router.push({ name: 'calendar' });
+    axios
+        .post('http://localhost:8080/api/hoge', {}, { withCredentials: true })
+        .catch(error => {
+            console.log(error.response.status);
+            router.push('/app');
+        });;
 }
 onBeforeUnmount(() => { removeResizeEvent() });
 const stretchableSidebarComputedStyle = computed(() => { return { width: `${stretchableSidebarStyle.value.width * 100}%` } });
@@ -115,10 +115,23 @@ const sidebarMinSize = computed(() => { return toggleBtnStyle.value.width / 2 * 
             </td>
             <td style="padding: 0%;">
                 <div id="page" style="background-color: #1e1e1e;">
-                    <StretchableSidebar :isSidebarOpened="isSidebarOpened" :style="stretchableSidebarComputedStyle" />
+                    <StretchableSidebar :isSidebarOpened="isSidebarOpened" :style="stretchableSidebarComputedStyle"
+                        v-slot:projectList>
+                        <ul style="color: white;">
+                            <li>
+                                ここに
+                            </li>
+                            <li>
+                                プロジェクトの一覧を
+                            </li>
+                            <li>
+                                表示します
+                            </li>
+                        </ul>
+                    </StretchableSidebar>
                     <SidebarBorder :isSidebarOpened="isSidebarOpened" @mousedown.native="startStretch"
                         @toggle-sidebar="toggleSidebar" />
-                    <slot>aaa</slot>
+                    <slot name="contents"></slot>
                 </div>
             </td>
         </tr>

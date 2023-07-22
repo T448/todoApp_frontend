@@ -10,18 +10,13 @@ const router = useRouter()
 const $cookies = inject<VueCookies>('$cookies');
 
 const callback: CallbackTypes.CredentialCallback = (response) => {
-    // This callback will be triggered when the user selects or login to
-    // his Google account from the popup
-    console.log("Credential JWT string", response);
-    console.log("Credential JWT string", response.credential);
-    console.log(decodeCredential(response.credential));
-
     const res: any = decodeCredential(response.credential);
     axios
         .post("http://localhost:8080/api/login", { email: res.email, name: res.name }, { withCredentials: true })
         .then(res => {
             if (res.data.sessionID) {
                 $cookies?.set("sessionID", res.data.sessionID)
+                console.log("login");
                 router.push({ name: 'main' });
             } else {
                 alert("不正なログイン1");

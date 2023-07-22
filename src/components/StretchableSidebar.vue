@@ -2,11 +2,13 @@
     <aside id="strechable-sidebar">
         <div :style="sidebarContentComputedStyle">
             <div style="margin-top: 55px;">
-                <ul style="color: #ffffff;">
-                    <li>あああああ</li>
-                    <li>いいいいい</li>
-                    <li>ううううう</li>
-                </ul>
+                <slot name="projectList">
+                    <ul style="color: #ffffff;">
+                        <li>あああああ</li>
+                        <li>いいいいい</li>
+                        <li>ううううう</li>
+                    </ul>
+                </slot>
             </div>
         </div>
     </aside>
