@@ -1,13 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import outerFrame from './components/outerFrame.vue';
-import top from './components/top.vue';
-import calendarView from './components/calendarView.vue';
+import beforeLogin from './components/beforeLogin.vue';
 import axios from 'axios';
+import AfterLogin from './components/afterLogin.vue';
 
 const routes = [
-    { path: '/app', name: 'top', component: top },
-    { path: '/app/main', name: 'main', component: outerFrame },
-    { path: '/app/calendar', name: 'calendar', component: calendarView },
+    { path: '/app', name: 'beforeLogin', component: beforeLogin },
+    { path: '/app/main', name: 'main', component: AfterLogin },
+    // { path: '/app/main/:project_id/0', name: 'calendar', component: CalendarView },
+    // { path: '/app/main/:project_id/1', name: 'list', component: ListView },
+    // { path: '/app/main/:project_id/2', name: 'timeLine', component: TimelineView },
+    // { path: '/app/main/:project_id/3', name: 'ganttChart', component: GanttChart },
 ]
 
 const router = createRouter({
@@ -16,7 +18,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    if ((from.name == "top" && to.name == "main") || to.name == "top") {
+    if ((from.name == "beforeLogin" && to.name == "main") || to.name == "beforeLogin") {
         // login時にセッションを発行するのでそのまま通す。
         next();
     } else if (to.matched.length == 0) {
@@ -24,17 +26,19 @@ router.beforeEach((to, from, next) => {
         router.push({ name: "main" });
     }
     else {
+        console.log('>> check session');
         axios
             .post("http://localhost:8080/api/session", {}, { withCredentials: true })
             .then(res => {
                 if (res.status !== 200) {
-                    next({ name: "top" });
+                    next({ name: "beforeLogin" });
                 } else {
+                    console.log('<< check session');
                     next();
                 }
             }).catch(error => {
                 console.log(error.response.status);
-                next({ name: "top" });
+                next({ name: "beforeLogin" });
             });
 
     }
