@@ -1,3 +1,100 @@
+<script setup lang="ts">
+import StretchableSidebar from './StretchableSidebar.vue'
+import SidebarBorder from './SidebarBorder.vue'
+import { useRouter } from 'vue-router';
+import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
+
+const router = useRouter()
+
+const TOGGLE_BTN_WIDTH = 35
+const DEFAULT_SIDEBAR_WIDTH = 0.2
+
+const stretchableSidebarStyle = ref({ width: DEFAULT_SIDEBAR_WIDTH });
+const pageRect = ref({ width: 0, height: 0 });
+const toggleBtnStyle = ref({ width: 0 });
+
+onMounted(() => { setScreenData() });
+onMounted(() => { addResizeEvent() });
+const setScreenData = () => {
+    setPageRect();
+    setToggleBtnStyle();
+}
+const setPageRect = () => {
+    const { width, height } = document.getElementById('page')!.getBoundingClientRect();
+    pageRect.value.width = width;
+    pageRect.value.height = height;
+}
+const setToggleBtnStyle = () => {
+    // 35px(ボタンの横幅)が親要素の横幅に対してどれぐらいの割合かを保存する。
+    toggleBtnStyle.value.width = TOGGLE_BTN_WIDTH / pageRect.value.width;
+}
+const startStretch = () => {
+    // 画面上でポインターを動かす度に、handleMoveが呼ばれるようにする。
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', finishStretch);
+}
+const finishStretch = () => {
+    window.removeEventListener('mousemove', handleMove);
+    window.removeEventListener('mouseup', finishStretch);
+}
+const handleMove = (event: MouseEvent) => {
+    const { pageX } = event
+    const sidebarWidth = pageX / pageRect.value.width; // サイドバーの親要素に対する横幅の割合 = 画面最左からポインターまでの距離 / 親要素の横幅
+    if (sidebarWidth >= sidebarMinSize.value) {
+        stretchableSidebarStyle.value.width = sidebarWidth;
+    } else {
+        stretchableSidebarStyle.value.width = sidebarMinSize.value;
+        finishStretch();
+    }
+}
+const addResizeEvent = () => {
+    window.addEventListener('resize', setScreenData)
+}
+const removeResizeEvent = () => {
+    window.removeEventListener('resize', setScreenData)
+}
+const toggleSidebar = () => {
+    if (stretchableSidebarStyle.value.width === sidebarMinSize.value) {
+        stretchableSidebarStyle.value.width = DEFAULT_SIDEBAR_WIDTH;
+    } else {
+        stretchableSidebarStyle.value.width = sidebarMinSize.value;
+    }
+}
+const home = () => {
+    console.log('home');
+}
+const openNotification = () => {
+    console.log('open Notification');
+}
+const openUser = () => {
+    console.log('open User');
+}
+const openSearch = () => {
+    console.log('open Search');
+}
+const openSettings = () => {
+    console.log('open Settings');
+}
+const logout = () => {
+    console.log('logout');
+}
+const test = () => {
+    console.log("test");
+    // axios
+    //     .post('http://localhost:8080/api/hoge', {}, { withCredentials: true })
+    //     .catch(error => {
+    //         console.log(error.response.status);
+    //         this.$router.push('/app');
+    //     });;
+    router.push({ name: 'calendar' });
+}
+onBeforeUnmount(() => { removeResizeEvent() });
+const stretchableSidebarComputedStyle = computed(() => { return { width: `${stretchableSidebarStyle.value.width * 100}%` } });
+const isSidebarOpened = computed(() => { return stretchableSidebarStyle.value.width > sidebarMinSize.value });
+const sidebarMinSize = computed(() => { return toggleBtnStyle.value.width / 2 * 0 });
+
+</script>
+
 <template>
     <table style="table-layout: fixed;border-collapse:collapse;	width:100%;height: 100vh;padding: 0px;">
         <tr>
@@ -21,136 +118,13 @@
                     <StretchableSidebar :isSidebarOpened="isSidebarOpened" :style="stretchableSidebarComputedStyle" />
                     <SidebarBorder :isSidebarOpened="isSidebarOpened" @mousedown.native="startStretch"
                         @toggle-sidebar="toggleSidebar" />
+                    <slot>aaa</slot>
                 </div>
             </td>
         </tr>
     </table>
 </template>
-  
-<script  lang="ts">
-import StretchableSidebar from './StretchableSidebar.vue'
-import SidebarBorder from './SidebarBorder.vue'
-import axios from 'axios'
-const TOGGLE_BTN_WIDTH = 35
-const DEFAULT_SIDEBAR_WIDTH = 0.2
-
-export default {
-    name: 'page',
-    components: {
-        StretchableSidebar,
-        SidebarBorder
-    },
-    data() {
-        return {
-            stretchableSidebarStyle: {
-                width: DEFAULT_SIDEBAR_WIDTH // 初期表示時の横幅は親要素の20%
-            },
-            pageRect: {
-                width: 0,
-                height: 0
-            },
-            toggleBtnStyle: {
-                width: 0
-            }
-        }
-    },
-    computed: {
-        stretchableSidebarComputedStyle() {
-            return { width: `${this.stretchableSidebarStyle.width * 100}%` }
-        },
-        isSidebarOpened() {
-            return this.stretchableSidebarStyle.width > this.sidebarMinSize
-        },
-        sidebarMinSize() {
-            // トグルボタンの横幅の割合の半分をサイドバーの最小値にする
-            return this.toggleBtnStyle.width / 2 * 0
-        }
-    },
-    mounted() {
-        this.setScreenData();
-        this.addResizeEvent();
-    },
-    beforeDestroy() {
-        this.removeResizeEvent()
-    },
-    methods: {
-        setScreenData() {
-            this.setPageRect()
-            this.setToggleBtnStyle()
-        },
-        setPageRect() {
-            // サイドバーの親要素の横幅と高さを保存。
-            const { width, height } = document.getElementById('page')!.getBoundingClientRect()
-            this.pageRect.width = width
-            this.pageRect.height = height
-        },
-        setToggleBtnStyle() {
-            // 35px(ボタンの横幅)が親要素の横幅に対してどれぐらいの割合かを保存する。
-            this.toggleBtnStyle.width = TOGGLE_BTN_WIDTH / this.pageRect.width
-        },
-        startStretch() {
-            // 画面上でポインターを動かす度に、handleMoveが呼ばれるようにする。
-            window.addEventListener('mousemove', this.handleMove)
-            window.addEventListener('mouseup', this.finishStretch)
-        },
-        finishStretch() {
-            window.removeEventListener('mousemove', this.handleMove)
-            window.removeEventListener('mouseup', this.finishStretch)
-        },
-        handleMove(event: MouseEvent) {
-            const { pageX } = event
-            const sidebarWidth = pageX / this.pageRect.width // サイドバーの親要素に対する横幅の割合 = 画面最左からポインターまでの距離 / 親要素の横幅
-            if (sidebarWidth >= this.sidebarMinSize) {
-                this.stretchableSidebarStyle.width = sidebarWidth
-            } else {
-                this.stretchableSidebarStyle.width = this.sidebarMinSize
-                this.finishStretch()
-            }
-        },
-        addResizeEvent() {
-            window.addEventListener('resize', this.setScreenData)
-        },
-        removeResizeEvent() {
-            window.removeEventListener('resize', this.setScreenData)
-        },
-        toggleSidebar() {
-            if (this.stretchableSidebarStyle.width === this.sidebarMinSize) {
-                this.stretchableSidebarStyle.width = DEFAULT_SIDEBAR_WIDTH
-            } else {
-                this.stretchableSidebarStyle.width = this.sidebarMinSize
-            }
-        },
-        home() {
-            console.log('home');
-        },
-        openNotification() {
-            console.log('open Notification');
-        },
-        openUser() {
-            console.log('open User');
-        },
-        openSearch() {
-            console.log('open Search');
-        },
-        openSettings() {
-            console.log('open Settings');
-        },
-        logout() {
-            console.log('logout');
-        },
-        test() {
-            console.log("test");
-            axios
-                .post('http://localhost:8080/api/hoge', {}, { withCredentials: true })
-                .catch(error => {
-                    console.log(error.response.status);
-                    this.$router.push('/app');
-                });;
-        }
-    }
-}
-</script>
-  
+    
 <style scoped>
 #page {
     display: flex;
