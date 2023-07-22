@@ -4,9 +4,14 @@ import SidebarBorder from './SidebarBorder.vue'
 import { useRouter } from 'vue-router';
 import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
 import axios from 'axios';
+import { useStoreCounter } from '../stores/counter';
 
 const router = useRouter()
 
+// store
+const counter = useStoreCounter();
+
+// 可変サイドバー
 const TOGGLE_BTN_WIDTH = 35
 const DEFAULT_SIDEBAR_WIDTH = 0.2
 
@@ -61,6 +66,13 @@ const toggleSidebar = () => {
         stretchableSidebarStyle.value.width = sidebarMinSize.value;
     }
 }
+
+onBeforeUnmount(() => { removeResizeEvent() });
+const stretchableSidebarComputedStyle = computed(() => { return { width: `${stretchableSidebarStyle.value.width * 100}%` } });
+const isSidebarOpened = computed(() => { return stretchableSidebarStyle.value.width > sidebarMinSize.value });
+const sidebarMinSize = computed(() => { return toggleBtnStyle.value.width / 2 * 0 });
+
+// sidebarのボタン用
 const home = () => {
     console.log('home');
 }
@@ -81,6 +93,7 @@ const logout = () => {
 }
 const test = () => {
     console.log("test");
+    counter.increment();
     axios
         .post('http://localhost:8080/api/hoge', {}, { withCredentials: true })
         .catch(error => {
@@ -88,11 +101,6 @@ const test = () => {
             router.push('/app');
         });;
 }
-onBeforeUnmount(() => { removeResizeEvent() });
-const stretchableSidebarComputedStyle = computed(() => { return { width: `${stretchableSidebarStyle.value.width * 100}%` } });
-const isSidebarOpened = computed(() => { return stretchableSidebarStyle.value.width > sidebarMinSize.value });
-const sidebarMinSize = computed(() => { return toggleBtnStyle.value.width / 2 * 0 });
-
 </script>
 
 <template>
@@ -126,6 +134,9 @@ const sidebarMinSize = computed(() => { return toggleBtnStyle.value.width / 2 * 
                             </li>
                             <li>
                                 表示します
+                            </li>
+                            <li>
+                                piniaのカウンタ : {{ counter.count }}
                             </li>
                         </ul>
                     </StretchableSidebar>
