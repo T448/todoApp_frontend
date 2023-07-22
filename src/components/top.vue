@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { inject } from "vue";
 import type { CallbackTypes } from "vue3-google-login";
 import { decodeCredential } from "vue3-google-login";
 import { useRouter } from 'vue-router';
+import { VueCookies } from "vue-cookies";
 import axios from "axios";
 
 const router = useRouter()
+const $cookies = inject<VueCookies>('$cookies');
 
 const callback: CallbackTypes.CredentialCallback = (response) => {
     // This callback will be triggered when the user selects or login to
@@ -18,7 +21,7 @@ const callback: CallbackTypes.CredentialCallback = (response) => {
         .post("http://localhost:8080/api/login", { email: res.email, name: res.name }, { withCredentials: true })
         .then(res => {
             if (res.data.sessionID) {
-                $cookies.set("sessionID", res.data.sessionID)
+                $cookies?.set("sessionID", res.data.sessionID)
                 router.push({ name: 'main' });
             } else {
                 alert("不正なログイン1");
@@ -56,7 +59,6 @@ const callback: CallbackTypes.CredentialCallback = (response) => {
     */
     z-index: 1001;
     box-shadow: 0 2px 3px rgba(255, 255, 255, 0.25);
-    /*これを付け足し*/
 }
 
 #beforeLogin {
