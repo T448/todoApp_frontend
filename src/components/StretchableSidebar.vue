@@ -42,7 +42,6 @@ export default {
     height: 100vh;
     max-width: 30%;
     overflow: hidden;
-    user-select: none;
 }
 </style>
   
