@@ -2,7 +2,7 @@
     <aside id="strechable-sidebar">
         <div :style="sidebarContentComputedStyle">
             <div style="margin-top: 55px;">
-                <slot name="projectList">
+                <slot name="sideBarContents">
                     <ul style="color: #ffffff;">
                         <li>あああああ</li>
                         <li>いいいいい</li>

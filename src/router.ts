@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import beforeLogin from './components/beforeLogin.vue';
+import BeforeLogin from './components/BeforeLogin.vue';
 import axios from 'axios';
-import AfterLogin from './components/afterLogin.vue';
+import AfterLogin from './components/AfterLogin.vue';
 
 const routes = [
-    { path: '/app', name: 'beforeLogin', component: beforeLogin },
+    { path: '/app', name: 'beforeLogin', component: BeforeLogin },
     { path: '/app/main', name: 'main', component: AfterLogin },
     // { path: '/app/main/:project_id/0', name: 'calendar', component: CalendarView },
     // { path: '/app/main/:project_id/1', name: 'list', component: ListView },
@@ -28,7 +28,7 @@ router.beforeEach((to, from, next) => {
     else {
         console.log('>> check session');
         axios
-            .post("http://localhost:8080/api/session", {}, { withCredentials: true })
+            .post("http://localhost:8080/api/hoge", {}, { withCredentials: true })
             .then(res => {
                 if (res.status !== 200) {
                     next({ name: "beforeLogin" });

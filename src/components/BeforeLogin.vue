@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject } from "vue";
+import { inject, } from "vue";
 import { googleAuthCodeLogin } from "vue3-google-login"
 import { useRouter } from 'vue-router';
 import { VueCookies } from "vue-cookies";
@@ -18,9 +18,15 @@ const login = () => {
                 .then((response_from_oauth2) => {
                     if (response_from_oauth2.status == 200) {
                         $cookies?.set("sessionID", response_from_oauth2.data.sessionId)
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }).then((res) => {
+                    if (res) {
                         router.push({ name: 'main' });
                     } else {
-                        alert("error");
+                        alert('error');
                     }
                 })
         })

@@ -124,8 +124,8 @@ const test = () => {
             <td style="padding: 0%;">
                 <div id="page" style="background-color: #1e1e1e;">
                     <StretchableSidebar :isSidebarOpened="isSidebarOpened" :style="stretchableSidebarComputedStyle"
-                        v-slot:projectList>
-                        <ul style="color: white;">
+                        v-slot:sideBarContents>
+                        <!-- <ul style="color: white;">
                             <li>
                                 ここに
                             </li>
@@ -138,11 +138,12 @@ const test = () => {
                             <li>
                                 piniaのカウンタ : {{ counter.count }}
                             </li>
-                        </ul>
+                        </ul> -->
+                        <slot name="sideBarContents"></slot>
                     </StretchableSidebar>
                     <SidebarBorder :isSidebarOpened="isSidebarOpened" @mousedown.native="startStretch"
                         @toggle-sidebar="toggleSidebar" />
-                    <slot name="contents"></slot>
+                    <slot name="mainContents"></slot>
                 </div>
             </td>
         </tr>
