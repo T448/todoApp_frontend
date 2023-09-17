@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { useStoreCounter } from '../stores/counter';
+import { getCookies } from 'typescript-cookie';
 
 // store
 const counter = useStoreCounter();
@@ -30,10 +31,18 @@ const logout = () => {
 const test = () => {
     console.log("test");
     counter.increment();
+    const cookies = getCookies();
+    const header = { "sessionID": cookies.sessionID };
     axios
-        .post('http://localhost:8080/api/hoge', {}, { withCredentials: true })
+        .post('http://localhost:8080/api/hoge', {}, { headers: header, withCredentials: true })
+        .then(res => {
+            console.log(res);
+        })
         .catch(error => {
-            console.log(error.response.status);
+            console.log(error.response);
+            if (error.response.status == 401) {
+                alert('セッションが無効です');
+            }
             router.push('/app');
         });;
 }
