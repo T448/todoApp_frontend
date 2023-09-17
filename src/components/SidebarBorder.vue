@@ -1,3 +1,18 @@
+<script setup lang="ts">
+
+defineProps({
+    isSidebarOpened: {
+        type: Boolean,
+        required: true
+    }
+})
+const emits = defineEmits(['toggle-sidebar']);
+
+const toggleSidebar = () => {
+    emits('toggle-sidebar');
+}
+</script>
+
 <template>
     <div id="sidebar-border">
         <span id="sidebar-border-btn" @click="toggleSidebar">
@@ -5,22 +20,7 @@
         </span>
     </div>
 </template>
-<script lang="ts">
-export default {
-    name: 'sidebar-border',
-    props: {
-        isSidebarOpened: {
-            type: Boolean,
-            required: true
-        }
-    },
-    methods: {
-        toggleSidebar() {
-            this.$emit('toggle-sidebar')
-        }
-    }
-}
-</script>
+
 <style scoped>
 #sidebar-border {
     width: 3px;
