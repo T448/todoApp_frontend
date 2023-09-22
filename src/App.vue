@@ -26,3 +26,9 @@ const isLogin = computed(() => router.currentRoute.value.path !== "/app");
     <router-view />
   </template>
 </template>
+<style>
+body {
+  margin: 0%;
+  color: white;
+}
+</style>

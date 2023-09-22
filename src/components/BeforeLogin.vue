@@ -119,9 +119,3 @@ const removeCookiePromise = (cookieName: string) => {
     }
 }
 </style>
-
-<style>
-body {
-    margin: 0%;
-}
-</style>
