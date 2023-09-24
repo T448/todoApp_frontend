@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import OneDay from './OneDay.vue';
-import AddEventDialog from '../AddEventDialog.vue';
+import AddEventDialog from './AddEventDialog.vue';
 import { ref } from 'vue';
 
 const isShowDialog = ref(false);

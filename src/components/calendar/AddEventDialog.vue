@@ -41,8 +41,7 @@ const addEvent = () => {
                 <input type="datetime-local" v-model="endDatetimeLocal">
             </div>
             <span style="color: white;">{{ eventTitle }}</span>
-            <textarea v-model="memo" @input="eventTitle = $event.target.value" placeholder="メモ"
-                class="memo-input"></textarea>
+            <textarea v-model="memo" @input="memo = $event.target.value" placeholder="メモ" class="memo-input"></textarea>
         </div>
         <div>
             <button @click="addEvent" style="margin-right: 10px;margin-bottom: 10px;">
