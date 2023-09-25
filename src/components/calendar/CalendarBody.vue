@@ -3,13 +3,13 @@ import OneDay from './OneDay.vue';
 import AddEventDialog from './AddEventDialog.vue';
 import { ref } from 'vue';
 
-const isShowDialog = ref(false);
+const showAddEventDialogRef = ref(false);
 
 const showAddEventDialog = () => {
-    isShowDialog.value = true;
+    showAddEventDialogRef.value = true;
 };
 const closeAddEventDialog = () => {
-    isShowDialog.value = false;
+    showAddEventDialogRef.value = false;
 }
 const stopEvent = () => {
     event?.stopPropagation();
@@ -41,8 +41,8 @@ const stopEvent = () => {
             </tr>
         </tbody>
     </table>
-    <div v-if="isShowDialog" @click.stop="closeAddEventDialog" id="overlay">
-        <div id="content" @click="stopEvent">
+    <div v-if="showAddEventDialogRef" @click.stop="closeAddEventDialog" class="overlay overlay-add-event">
+        <div class="content content-add-event" @click="stopEvent">
             <AddEventDialog @close-dialog="closeAddEventDialog" />
         </div>
     </div>
@@ -70,10 +70,7 @@ const stopEvent = () => {
     opacity: 1;
 }
 
-#overlay {
-    /*　要素を重ねた時の順番　*/
-    z-index: 1;
-
+.overlay {
     /*　画面全体を覆う設定　*/
     position: fixed;
     top: 0;
@@ -89,10 +86,17 @@ const stopEvent = () => {
 
 }
 
-#content {
-    z-index: 2;
+.content {
     max-width: 50%;
     max-height: 50%;
     background: #fff;
+}
+
+.overlay-add-event {
+    z-index: 3
+}
+
+.content-add-event {
+    z-index: 4;
 }
 </style>
