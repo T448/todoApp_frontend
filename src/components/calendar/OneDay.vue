@@ -93,10 +93,12 @@ const stopEvent = () => {
     margin: 5px;
     min-height: 24px;
     max-height: 48px;
+    opacity: 75%;
 }
 
 .task:hover {
-    background-color: red;
+    /* background-color: red; */
+    opacity: 100%;
 }
 
 .overlay {
