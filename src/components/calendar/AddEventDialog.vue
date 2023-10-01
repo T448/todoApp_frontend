@@ -14,10 +14,15 @@ const startDate: Ref<Date | undefined> = ref();
 const startDatetimeLocal: Ref<Date | undefined> = ref();
 const endDate: Ref<Date | undefined> = ref();
 const endDatetimeLocal: Ref<Date | undefined> = ref();
+const projectColorListRef = ref(new Set(["#ff0000", "#00ff00", "#0000ff"]));
+const projectColor = ref("#00ff00");
+const isChildEvent = ref(true);
 
 const addEvent = () => {
     console.log('startDate');
     console.log(startDate.value);
+    const selectedColor = <HTMLInputElement>document.getElementById("projectColor");
+    projectColorListRef.value.add(selectedColor.value);
 }
 </script>
 
@@ -42,6 +47,12 @@ const addEvent = () => {
             </div>
             <span style="color: white;">{{ eventTitle }}</span>
             <textarea v-model="memo" @input="memo = $event.target.value" placeholder="メモ" class="memo-input"></textarea>
+            <input v-if="isChildEvent" id="projectColor" type="color" list="color-picker" :value="projectColor" disabled
+                style="opacity: 25%;">
+            <input v-if="!isChildEvent" id="projectColor" type="color" list="color-picker" :value="projectColor">
+            <datalist v-if="!isChildEvent" id="color-picker">
+                <option v-for="color of  projectColorListRef" :value=color></option>
+            </datalist>
         </div>
         <div>
             <button @click="addEvent" style="margin-right: 10px;margin-bottom: 10px;">
