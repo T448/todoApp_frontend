@@ -2,6 +2,10 @@
 import OneDay from './OneDay.vue';
 import AddEventDialog from './AddEventDialog.vue';
 import { ref } from 'vue';
+import { useEventStore } from '../../stores/calendarStore';
+
+const eventStore = useEventStore();
+eventStore.fetch(true);
 
 const showAddEventDialogRef = ref(false);
 
