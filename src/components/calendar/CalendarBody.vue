@@ -47,7 +47,7 @@ const stopEvent = () => {
     </table>
     <div v-if="showAddEventDialogRef" @click.stop="closeAddEventDialog" class="overlay overlay-add-event">
         <div class="content content-add-event" @click="stopEvent">
-            <AddEventDialog @close-dialog="closeAddEventDialog" />
+            <AddEventDialog @close-dialog="closeAddEventDialog" :is-child-event="false" />
         </div>
     </div>
 </template>

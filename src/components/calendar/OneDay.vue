@@ -2,24 +2,24 @@
 import { ref } from 'vue';
 import { defaultEvent2 } from '../../type/event';
 import EventDetailDialog from './EventDetailDialog.vue';
-type event = {
+type calendarEvent = {
     id: string,
     title: string,
     startDate: Date,
     endDate: Date,
     memo?: string,
-    children?: event[]
+    children?: calendarEvent[]
 }
 
 const props = defineProps({
     date: Number,
-    events: Array<event>,
+    calendarEvents: Array<calendarEvent>,
 })
 const emits = defineEmits<{
     (e: 'showAddEventDialog'): void
 }>();
 const date = ref(props.date);
-const events = ref(props.events);
+const events = ref(props.calendarEvents);
 
 
 const showAddButton = ref(false);
@@ -59,8 +59,7 @@ const stopEvent = () => {
             <label @click="showEventDetail">{{ event.title }}</label>
             <div v-if="showEventDetailRef" @click.stop="closeEventDetail" class="overlay overlay-event-detail">
                 <div class="content content-event-detail" @click="stopEvent">
-                    <EventDetailDialog :event="event" @close-dialog="closeEventDetail"
-                        @show-add-event-dialog="onClickAddButton" />
+                    <EventDetailDialog :calendarEvent="event" @close-dialog="closeEventDetail" />
                 </div>
             </div>
         </div>

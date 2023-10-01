@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { Ref, ref } from 'vue';
 
+const props = defineProps<{
+    isChildEvent: boolean
+}>();
+
 const emits = defineEmits<{
     (e: 'closeDialog'): void
 }>();
@@ -16,7 +20,7 @@ const endDate: Ref<Date | undefined> = ref();
 const endDatetimeLocal: Ref<Date | undefined> = ref();
 const projectColorListRef = ref(new Set(["#ff0000", "#00ff00", "#0000ff"]));
 const projectColor = ref("#00ff00");
-const isChildEvent = ref(true);
+const isChildEvent = ref(props.isChildEvent);
 
 const addEvent = () => {
     console.log('startDate');
