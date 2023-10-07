@@ -11,15 +11,14 @@ type calendarEvent = {
     children?: calendarEvent[]
 }
 
-const props = defineProps({
+const props = defineProps<{
     date: Number,
-    calendarEvents: Array<calendarEvent>,
-})
+    calendarEvents?: Array<calendarEvent>,
+}>();
 const emits = defineEmits<{
     (e: 'showAddEventDialog'): void
 }>();
-const date = ref(props.date);
-const events = ref(props.calendarEvents);
+const eventsRef = ref(props.calendarEvents);
 
 
 const showAddButton = ref(false);
@@ -32,10 +31,9 @@ const addEventButtonMouseLeave = () => {
 
 
 const onClickAddButton = () => {
-    console.log('OneDayのほう');
     emits('showAddEventDialog');
 }
-events.value = [defaultEvent2];
+eventsRef.value = [defaultEvent2];
 const showEventDetailRef = ref(false);
 
 const showEventDetail = () => {
@@ -54,7 +52,7 @@ const stopEvent = () => {
         <div class="date">
             {{ date }}
         </div>
-        <div v-for="(event, index) of events" class="task">
+        <div v-for="(event, index) of eventsRef" class="task">
             <input type="checkbox" :key="index">
             <label @click="showEventDetail">{{ event.title }}</label>
             <div v-if="showEventDetailRef" @click.stop="closeEventDetail" class="overlay overlay-event-detail">
