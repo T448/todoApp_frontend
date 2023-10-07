@@ -13,7 +13,10 @@ type monthAndDay = {
     month: number,
     date: number
 }
-const jstNow = new Date(Date.now() + ((new Date().getTimezoneOffset() + (9 * 60)) * 60 * 1000));
+const getJstNow = () => {
+    return new Date(Date.now() + ((new Date().getTimezoneOffset() + (9 * 60)) * 60 * 1000));
+}
+const jstNow = getJstNow();
 
 const thisYear: Ref<number> = ref(jstNow.getFullYear());
 const thisMonth: Ref<number> = ref(jstNow.getMonth() + 1);
@@ -131,6 +134,11 @@ document.addEventListener('keydown', e => {
         closeAddEventDialog();
     }
 })
+const go2today = () => {
+    const jstNow = getJstNow();
+    thisYear.value = jstNow.getFullYear();
+    thisMonth.value = jstNow.getMonth() + 1;
+}
 </script>
 
 <template>
@@ -139,6 +147,7 @@ document.addEventListener('keydown', e => {
             <img src="../../assets/icons8-back-30.png" class="month-button" @click="goToPreviousMonth">
             <img src="../../assets/icons8-forward-30.png" class="month-button" @click="goToNextMonth">
             <span style="color:white;font-size:28px">{{ thisYear }}年{{ thisMonthStr }}月</span>
+            <button @click="go2today">today</button>
         </div>
         <div>
             <img src="../../assets/icons8-add-50.png" class="month-button" @click="showAddEventDialog">
