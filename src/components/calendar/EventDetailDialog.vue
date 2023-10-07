@@ -35,6 +35,11 @@ const closeAddEventDialog = () => {
 const stopEvent = () => {
     event?.stopPropagation();
 }
+document.addEventListener('keydown', e => {
+    if (e.key === "Escape") {
+        closeAddEventDialog();
+    }
+})
 </script>
 
 
