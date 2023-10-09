@@ -1,19 +1,33 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { defaultEvent2 } from '../../type/event';
 import EventDetailDialog from './EventDetailDialog.vue';
-type calendarEvent = {
+// type calendarEvent = {
+//     id: string,
+//     title: string,
+//     startDate: Date,
+//     endDate: Date,
+//     memo?: string,
+//     children?: calendarEvent[]
+// }
+type calendarEventBase = {
     id: string,
+    email: string,
     title: string,
-    startDate: Date,
-    endDate: Date,
-    memo?: string,
-    children?: calendarEvent[]
+    shortTitle: string,
+    projectId: string,
+    projectColor: string,
+    parentEventId: string,
+    childEventIdList: string[],
+    memo: string,
+    start: Date,
+    end: Date,
+    createdAt: Date,
+    updatedAt: Date,
 }
 
 const props = defineProps<{
     date: Number,
-    calendarEvents?: Array<calendarEvent>,
+    calendarEvents?: Array<calendarEventBase>,
 }>();
 const emits = defineEmits<{
     (e: 'showAddEventDialog'): void
@@ -33,13 +47,15 @@ const addEventButtonMouseLeave = () => {
 const onClickAddButton = () => {
     emits('showAddEventDialog');
 }
-eventsRef.value = [defaultEvent2];
+// eventsRef.value = [defaultEvent2];
 const showEventDetailRef = ref(false);
 
 const showEventDetail = () => {
+    console.log('showEventDetail');
     showEventDetailRef.value = true;
 }
 const closeEventDetail = () => {
+    console.log('closeEventDetail');
     showEventDetailRef.value = false;
 }
 const stopEvent = () => {
@@ -57,9 +73,9 @@ document.addEventListener('keydown', e => {
         <div class="date">
             {{ date }}
         </div>
-        <div v-for="(event, index) of eventsRef" class="task">
+        <div v-for="(event, index) of eventsRef" class="task" v-bind:style="{ backgroundColor: event.projectColor }">
             <input type="checkbox" :key="index">
-            <label @click="showEventDetail">{{ event.title }}</label>
+            <label @click="showEventDetail">{{ event.shortTitle }}</label>
             <div v-if="showEventDetailRef" @click.stop="closeEventDetail" class="overlay overlay-event-detail">
                 <div class="content content-event-detail" @click="stopEvent">
                     <EventDetailDialog :calendarEvent="event" @close-dialog="closeEventDetail" />
@@ -91,7 +107,7 @@ document.addEventListener('keydown', e => {
 }
 
 .task {
-    background: #ce7169;
+    /* background: #ce7169; */
     border-radius: 4px;
     margin: 5px;
     min-height: 24px;

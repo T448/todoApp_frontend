@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { calendarEvent } from '../../type/event';
+import { useEventStore } from '../../stores/calendarStore';
 
 
 interface Props {
-    calendarEvent: calendarEvent,
+    calendarEventId: String,
     indentCount: number
 }
+const eventStore = useEventStore();
 
 const props = defineProps<Props>();
-const calendarEvent = ref(props.calendarEvent);
+const calendarEvent = ref(
+    eventStore.calendarEvents.get(props.calendarEventId)
+);
 const openChildEventsListRef = ref(false);
 const childEventsListSwitch = () => {
     openChildEventsListRef.value = !openChildEventsListRef.value;
@@ -21,14 +25,14 @@ const listItemStyle = computed(() => {
 
 </script>
 <template>
-    <span v-if="calendarEvent.children !== undefined && calendarEvent.children.length > 0">
+    <span v-if="calendarEvent?.childEventIdList !== undefined && calendarEvent?.childEventIdList.length > 0">
         <button v-if="!openChildEventsListRef" @click="childEventsListSwitch">></button>
         <button v-else @click="childEventsListSwitch">v</button>
     </span>
-    {{ calendarEvent.title }}
-    <div v-for="childEvent of calendarEvent.children">
+    {{ calendarEvent?.title }}
+    <div v-for="childEventId of calendarEvent?.childEventIdList">
         <div v-if="openChildEventsListRef" :style="listItemStyle" class="list-item">
-            <ChildEventListItem :calendarEvent="childEvent" :indent-count="indentCount + 1" />
+            <ChildEventListItem :calendarEventId="childEventId" :indent-count="indentCount + 1" />
         </div>
     </div>
 </template>

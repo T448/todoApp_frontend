@@ -4,6 +4,7 @@ import AddEventDialog from './AddEventDialog.vue';
 import { computed, ref, Ref } from 'vue';
 import { useEventStore } from '../../stores/calendarStore';
 import moment from "moment"
+import { calendarEventBase } from '../../type/event';
 
 const eventStore = useEventStore();
 eventStore.fetch(true);
@@ -93,6 +94,21 @@ const computedDateList = computed(() => {
     return dateList;
 })
 
+const computedCalendarEventList = computed(() => {
+    let calendarEventList: calendarEventBase[][] = [];
+    const calendarEventListInStore = Array.from(eventStore.calendarEvents.values());
+    computedDateList.value.forEach((ymd) => {
+        const targetDate = new Date(ymd.year, ymd.month, ymd.date);
+        const targetEvents = calendarEventListInStore.filter((event) => {
+            let startDate = new Date(event.start);
+            let endDate = new Date(event.end);
+            return startDate <= targetDate && targetDate <= endDate;
+        })
+        calendarEventList.push(targetEvents)
+    })
+    return calendarEventList;
+})
+
 
 const goToNextMonth = () => {
     if (thisMonth.value == 12) {
@@ -171,6 +187,7 @@ const go2today = () => {
             <tr v-for="week of maxWeeks">
                 <td v-for="day of 7">
                     <OneDay :date="computedDateList[7 * (week - 1) + day - 1].date"
+                        :calendar-events="computedCalendarEventList[7 * (week - 1) + day - 1]"
                         @show-add-event-dialog="showAddEventDialog" />
                 </td>
             </tr>

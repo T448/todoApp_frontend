@@ -1,3 +1,35 @@
+export type calendarEventBase = {
+    id: string,
+    email: string,
+    title: string,
+    shortTitle: string,
+    projectId: string,
+    projectColor: string,
+    parentEventId: string,
+    childEventIdList: string[],
+    memo: string,
+    start: Date,
+    end: Date,
+    createdAt: Date,
+    updatedAt: Date,
+}
+
+export const defaultEvent00: calendarEventBase = {
+    id: "defaultEvent00",
+    email: "",
+    title: "defaultEvent00",
+    shortTitle: "defaultEvent00",
+    projectId: "",
+    projectColor: "#00ff00",
+    parentEventId: "",
+    childEventIdList: [""],
+    memo: "string",
+    start: new Date("2023/10/02"),
+    end: new Date("2023/10/03"),
+    createdAt: new Date("2023/10/02"),
+    updatedAt: new Date("2023/10/03"),
+}
+
 export type calendarEvent = {
     id: string,
     title: string,
