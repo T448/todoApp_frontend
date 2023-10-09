@@ -9,7 +9,8 @@ const eventStore = useEventStore();
 eventStore.fetch(true);
 
 // 日付の配列の作成
-type monthAndDay = {
+type ymd = {
+    year: number,
     month: number,
     date: number
 }
@@ -22,7 +23,7 @@ const thisYear: Ref<number> = ref(jstNow.getFullYear());
 const thisMonth: Ref<number> = ref(jstNow.getMonth() + 1);
 
 const computedDateList = computed(() => {
-    const dateList: monthAndDay[] = [];
+    const dateList: ymd[] = [];
     const dateListStr: string[] = [];
     const yearMonth = moment([thisYear.value, thisMonth.value - 1]);
     const startDayOfMonth = yearMonth.startOf('month').get('date');
@@ -33,7 +34,8 @@ const computedDateList = computed(() => {
 
     for (let d = startDayOfMonth; d <= endDayOfMonth; d++) {
         const m = moment([yearMonth.get('year'), yearMonth.get('month'), d]);
-        const dateDict: monthAndDay = {
+        const dateDict: ymd = {
+            year: m.get("year"),
             month: m.get("month"),
             date: m.get("date")
         }
@@ -56,7 +58,8 @@ const computedDateList = computed(() => {
         const endDayOfPrevMonth = prevYearMonth.endOf('month').get('date');
         for (let d = 0; d < startWeekDayOfMonth; d++) {
             const m = moment([prevYear, prevMonth, endDayOfPrevMonth - d]);
-            const dateDict: monthAndDay = {
+            const dateDict: ymd = {
+                year: m.get("year"),
                 month: m.get("month"),
                 date: m.get("date")
             }
@@ -78,7 +81,8 @@ const computedDateList = computed(() => {
         nextMonth -= 1; // 月は0スタートであるため
         for (let d = 1; d < 7 - endWeekDayOfMonth; d++) {
             const m = moment([nextYear, nextMonth, d]);
-            const dateDict: monthAndDay = {
+            const dateDict: ymd = {
+                year: m.get("year"),
                 month: m.get("month"),
                 date: m.get("date")
             }
