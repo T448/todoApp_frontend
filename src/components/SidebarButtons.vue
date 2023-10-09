@@ -33,18 +33,22 @@ const test = () => {
     counter.increment();
     const cookies = getCookies();
     const header = { "sessionID": cookies.sessionID };
-    axios
-        .post('http://localhost:8080/api/hoge', {}, { headers: header, withCredentials: true })
+    // axios
+    //     .post('http://localhost:8080/api/hoge', {}, { headers: header, withCredentials: true })
+    //     .then(res => {
+    //         console.log(res);
+    //     })
+    //     .catch(error => {
+    //         console.log(error.response);
+    //         if (error.response.status == 401) {
+    //             alert('セッションが無効です');
+    //         }
+    //         router.push('/app');
+    //     });;
+    axios.get('http://localhost:8080/api/projects', { headers: header, withCredentials: true })
         .then(res => {
-            console.log(res);
+            console.log(res)
         })
-        .catch(error => {
-            console.log(error.response);
-            if (error.response.status == 401) {
-                alert('セッションが無効です');
-            }
-            router.push('/app');
-        });;
 }
 </script>
 
