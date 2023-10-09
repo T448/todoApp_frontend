@@ -23,6 +23,7 @@ const memo = ref(props.calendarEvent.memo);
 const start = ref(new Date(props.calendarEvent.start));
 const end = ref(new Date(props.calendarEvent.end));
 const childEventIdList = ref(props.calendarEvent.childEventIdList);
+const projectColor = ref(props.calendarEvent.projectColor);
 
 const showAddEventDialogRef = ref(false);
 
@@ -46,7 +47,7 @@ document.addEventListener('keydown', e => {
 <template>
     <div class="dialog">
         <div>
-            <div class="text">{{ eventTitle }}</div>
+            <div class="text" v-bind:style="{ background: projectColor }">{{ eventTitle }}</div>
             <div class="text">{{ dateTimeConverter(start) }}</div>
             <div class="text">{{ dateTimeConverter(end) }}</div>
             <div class="text">{{ memo }}</div>
