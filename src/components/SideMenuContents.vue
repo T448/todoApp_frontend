@@ -1,12 +1,32 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+import { useProjectStore } from '../stores/projectStore';
 
+const projectStore = useProjectStore();
+projectStore.fetch();
+const projectList = computed(() => {
+    const projectListInStore = Array.from(projectStore.projects.values());
+    return projectListInStore;
+})
+
+const showProjectDetailDialog = () => {
+    alert('project詳細ダイアログ作成予定');
+}
+const shoeAddProjectDialog = () => {
+    alert('project追加ダイアログ作成予定');
+}
 </script>
 
 <template>
     <table>
-        <tr v-for="n of 5">
-            <td class="project-item">
-                hoge+{{ n }}
+        <tr v-for="projectItem of projectList">
+            <td class="project-item" @click="showProjectDetailDialog">
+                {{ projectItem.name }}
+            </td>
+        </tr>
+        <tr>
+            <td class="project-item" style="text-align: center;" @click="shoeAddProjectDialog">
+                +
             </td>
         </tr>
     </table>
