@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import EventDetailDialog from './EventDetailDialog.vue';
 // type calendarEvent = {
 //     id: string,
@@ -32,7 +32,7 @@ const props = defineProps<{
 const emits = defineEmits<{
     (e: 'showAddEventDialog'): void
 }>();
-const eventsRef = ref(props.calendarEvents);
+const eventsRef = computed(() => props.calendarEvents);
 
 
 const showAddButton = ref(false);
@@ -75,7 +75,7 @@ document.addEventListener('keydown', e => {
         </div>
         <div v-for="(event, index) of eventsRef" class="task" v-bind:style="{ backgroundColor: event.projectColor }">
             <input type="checkbox" :key="index">
-            <label @click="showEventDetail">{{ event.shortTitle }}</label>
+            <label @click="showEventDetail" class="event-label">{{ event.shortTitle }}</label>
             <div v-if="showEventDetailRef" @click.stop="closeEventDetail" class="overlay overlay-event-detail">
                 <div class="content content-event-detail" @click="stopEvent">
                     <EventDetailDialog :calendarEvent="event" @close-dialog="closeEventDetail" />

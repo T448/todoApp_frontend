@@ -22,7 +22,10 @@ const jstNow = getJstNow();
 
 const thisYear: Ref<number> = ref(jstNow.getFullYear());
 const thisMonth: Ref<number> = ref(jstNow.getMonth() + 1);
-
+const cellWidth = "13%";
+const cellHeight = computed(() => {
+    return (100 / maxWeeks.value).toString() + "%";
+});
 const computedDateList = computed(() => {
     const dateList: ymd[] = [];
     const dateListStr: string[] = [];
@@ -99,10 +102,14 @@ const computedCalendarEventList = computed(() => {
     const calendarEventListInStore = Array.from(eventStore.calendarEvents.values());
     computedDateList.value.forEach((ymd) => {
         const targetDate = new Date(ymd.year, ymd.month, ymd.date);
+        const dateAfterTargetDate = new Date(ymd.year, ymd.month, ymd.date + 1);
         const targetEvents = calendarEventListInStore.filter((event) => {
             let startDate = new Date(event.start);
             let endDate = new Date(event.end);
-            return startDate <= targetDate && targetDate <= endDate;
+            return (
+                (targetDate <= startDate && startDate < dateAfterTargetDate)
+                || (targetDate <= endDate && endDate < dateAfterTargetDate)
+            );
         })
         calendarEventList.push(targetEvents)
     })
@@ -184,8 +191,8 @@ const go2today = () => {
             <th>Sat</th>
         </thead>
         <tbody>
-            <tr v-for="week of maxWeeks">
-                <td v-for="day of 7">
+            <tr v-for="week of  maxWeeks " v-bind:style="{ height: cellHeight }">
+                <td v-for=" day  of  7 " v-bind:style="{ width: cellWidth }">
                     <OneDay :date="computedDateList[7 * (week - 1) + day - 1].date"
                         :calendar-events="computedCalendarEventList[7 * (week - 1) + day - 1]"
                         @show-add-event-dialog="showAddEventDialog" />
