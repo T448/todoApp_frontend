@@ -32,6 +32,7 @@ export const useEventStore = defineStore('calendarEvents', {
                     title: item.title,
                     shortTitle: item.shortTitle,
                     projectId: item.projectId,
+                    projectName: item.projectName,
                     projectColor: item.projectColor,
                     parentEventId: item.parentEventId,
                     childEventIdList: item.childEventIdList,

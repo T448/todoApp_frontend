@@ -1,8 +1,25 @@
 <script setup lang="ts">
-import { Ref, ref } from 'vue';
+import { Ref, computed, ref } from 'vue';
+import { useProjectStore } from '../../stores/projectStore';
+
+type project = {
+    id: string,
+    name: string,
+    memo: string,
+    color: string,
+    email: string,
+    createdAt: Date,
+    updatedAt: Date
+}
+
+const projectStore = useProjectStore();
+const projectList = computed(() => {
+    return Array.from(projectStore.projects.values());
+})
 
 const props = defineProps<{
-    isChildEvent: boolean
+    parentEventProjectName?: String,
+    parentEventProjectColor?: String
 }>();
 
 const emits = defineEmits<{
@@ -18,15 +35,24 @@ const startDate: Ref<Date | undefined> = ref();
 const startDatetimeLocal: Ref<Date | undefined> = ref();
 const endDate: Ref<Date | undefined> = ref();
 const endDatetimeLocal: Ref<Date | undefined> = ref();
-const projectColorListRef = ref(new Set(["#ff0000", "#00ff00", "#0000ff"]));
-const projectColor = ref("#00ff00");
-const isChildEvent = ref(props.isChildEvent);
 
+
+const parentEventProjectNameRef = ref(props.parentEventProjectName);
+const parentEventProjectColorRef: Ref<String | undefined> = ref(props.parentEventProjectColor);
+
+const selectedProject: Ref<project | undefined> = ref(projectList.value.at(0));
+const selectedProjectColor = computed(() => {
+    if (selectedProject.value !== undefined) {
+        return selectedProject.value.color;
+    } else {
+        return "#000000";
+    }
+})
+console.log("parentEventProjectRef.value");
+console.log(props.parentEventProjectColor);
 const addEvent = () => {
     console.log('startDate');
     console.log(startDate.value);
-    const selectedColor = <HTMLInputElement>document.getElementById("projectColor");
-    projectColorListRef.value.add(selectedColor.value);
 }
 </script>
 
@@ -51,12 +77,19 @@ const addEvent = () => {
             </div>
             <span style="color: white;">{{ eventTitle }}</span>
             <textarea v-model="memo" @input="memo = $event.target.value" placeholder="メモ" class="memo-input"></textarea>
-            <input v-if="isChildEvent" id="projectColor" type="color" list="color-picker" :value="projectColor" disabled
-                style="opacity: 25%;">
-            <input v-if="!isChildEvent" id="projectColor" type="color" list="color-picker" :value="projectColor">
-            <datalist v-if="!isChildEvent" id="color-picker">
-                <option v-for="color of  projectColorListRef" :value=color></option>
-            </datalist>
+            <div v-if="parentEventProjectColorRef">
+                <span v-bind:style="{ color: parentEventProjectColorRef }">●</span>
+                <span>{{ parentEventProjectNameRef }}</span>
+            </div>
+            <div v-if="!parentEventProjectNameRef">
+                <span v-bind:style="{ color: selectedProjectColor }">●</span>
+                <select v-model="selectedProject">
+                    <option v-for=" project of projectList" :value="project" style="color: black;">
+                        {{ project.name }}
+                    </option>
+                </select>
+            </div>
+
         </div>
         <div>
             <button @click="addEvent" style="margin-right: 10px;margin-bottom: 10px;">
