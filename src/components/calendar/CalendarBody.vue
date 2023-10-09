@@ -4,12 +4,14 @@ import AddEventDialog from './AddEventDialog.vue';
 import { computed, ref, Ref } from 'vue';
 import { useEventStore } from '../../stores/calendarStore';
 import moment from "moment"
+import { calendarEventBase } from '../../type/event';
 
 const eventStore = useEventStore();
 eventStore.fetch(true);
 
 // 日付の配列の作成
-type monthAndDay = {
+type ymd = {
+    year: number,
     month: number,
     date: number
 }
@@ -20,9 +22,12 @@ const jstNow = getJstNow();
 
 const thisYear: Ref<number> = ref(jstNow.getFullYear());
 const thisMonth: Ref<number> = ref(jstNow.getMonth() + 1);
-
+const cellWidth = "13%";
+const cellHeight = computed(() => {
+    return (100 / maxWeeks.value).toString() + "%";
+});
 const computedDateList = computed(() => {
-    const dateList: monthAndDay[] = [];
+    const dateList: ymd[] = [];
     const dateListStr: string[] = [];
     const yearMonth = moment([thisYear.value, thisMonth.value - 1]);
     const startDayOfMonth = yearMonth.startOf('month').get('date');
@@ -33,7 +38,8 @@ const computedDateList = computed(() => {
 
     for (let d = startDayOfMonth; d <= endDayOfMonth; d++) {
         const m = moment([yearMonth.get('year'), yearMonth.get('month'), d]);
-        const dateDict: monthAndDay = {
+        const dateDict: ymd = {
+            year: m.get("year"),
             month: m.get("month"),
             date: m.get("date")
         }
@@ -56,7 +62,8 @@ const computedDateList = computed(() => {
         const endDayOfPrevMonth = prevYearMonth.endOf('month').get('date');
         for (let d = 0; d < startWeekDayOfMonth; d++) {
             const m = moment([prevYear, prevMonth, endDayOfPrevMonth - d]);
-            const dateDict: monthAndDay = {
+            const dateDict: ymd = {
+                year: m.get("year"),
                 month: m.get("month"),
                 date: m.get("date")
             }
@@ -78,7 +85,8 @@ const computedDateList = computed(() => {
         nextMonth -= 1; // 月は0スタートであるため
         for (let d = 1; d < 7 - endWeekDayOfMonth; d++) {
             const m = moment([nextYear, nextMonth, d]);
-            const dateDict: monthAndDay = {
+            const dateDict: ymd = {
+                year: m.get("year"),
                 month: m.get("month"),
                 date: m.get("date")
             }
@@ -87,6 +95,25 @@ const computedDateList = computed(() => {
         }
     }
     return dateList;
+})
+
+const computedCalendarEventList = computed(() => {
+    let calendarEventList: calendarEventBase[][] = [];
+    const calendarEventListInStore = Array.from(eventStore.calendarEvents.values());
+    computedDateList.value.forEach((ymd) => {
+        const targetDate = new Date(ymd.year, ymd.month, ymd.date);
+        const dateAfterTargetDate = new Date(ymd.year, ymd.month, ymd.date + 1);
+        const targetEvents = calendarEventListInStore.filter((event) => {
+            let startDate = new Date(event.start);
+            let endDate = new Date(event.end);
+            return (
+                (targetDate <= startDate && startDate < dateAfterTargetDate)
+                || (targetDate <= endDate && endDate < dateAfterTargetDate)
+            );
+        })
+        calendarEventList.push(targetEvents)
+    })
+    return calendarEventList;
 })
 
 
@@ -164,9 +191,10 @@ const go2today = () => {
             <th>Sat</th>
         </thead>
         <tbody>
-            <tr v-for="week of maxWeeks">
-                <td v-for="day of 7">
+            <tr v-for="week of  maxWeeks " v-bind:style="{ height: cellHeight }">
+                <td v-for=" day  of  7 " v-bind:style="{ width: cellWidth }">
                     <OneDay :date="computedDateList[7 * (week - 1) + day - 1].date"
+                        :calendar-events="computedCalendarEventList[7 * (week - 1) + day - 1]"
                         @show-add-event-dialog="showAddEventDialog" />
                 </td>
             </tr>

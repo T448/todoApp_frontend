@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { calendarEvent, defaultEvent0 } from '../../type/event';
+import { calendarEventBase, defaultEvent00 } from '../../type/event';
 import { dateTimeConverter } from '../../modules/dateTimeConverter';
 import ChildEventListItem from './ChildEventListItem.vue';
 import AddEventDialog from './AddEventDialog.vue';
 
 interface Props {
-    calendarEvent: calendarEvent;
+    calendarEvent: calendarEventBase;
 }
 
-const props = withDefaults(defineProps<Props>(), { calendarEvent: () => defaultEvent0 });
+const props = withDefaults(defineProps<Props>(), { calendarEvent: () => defaultEvent00 });
 
 const emits = defineEmits<{
     (e: 'closeDialog'): void
@@ -17,12 +17,13 @@ const emits = defineEmits<{
 const close = () => {
     emits('closeDialog');
 }
-const calendarEvent = ref(props.calendarEvent);
+// const calendarEvent = ref(props.calendarEvent);
 const eventTitle = ref(props.calendarEvent.title);
 const memo = ref(props.calendarEvent.memo);
-const start = ref(props.calendarEvent.startDate);
-const end = ref(props.calendarEvent.endDate);
-const childEvents = ref(props.calendarEvent.children);
+const start = ref(new Date(props.calendarEvent.start));
+const end = ref(new Date(props.calendarEvent.end));
+const childEventIdList = ref(props.calendarEvent.childEventIdList);
+const projectColor = ref(props.calendarEvent.projectColor);
 
 const showAddEventDialogRef = ref(false);
 
@@ -46,7 +47,7 @@ document.addEventListener('keydown', e => {
 <template>
     <div class="dialog">
         <div>
-            <div class="text">{{ eventTitle }}</div>
+            <div class="text" v-bind:style="{ background: projectColor }">{{ eventTitle }}</div>
             <div class="text">{{ dateTimeConverter(start) }}</div>
             <div class="text">{{ dateTimeConverter(end) }}</div>
             <div class="text">{{ memo }}</div>
@@ -54,9 +55,9 @@ document.addEventListener('keydown', e => {
         <div>
             <!-- TODO : クリックで子タスクの詳細に飛べるようにする -->
             <!-- TODO : 子タスクの一覧を出すトグルボタンをつける -->
-            <div v-if="childEvents !== undefined && childEvents.length > 0" class="text">子タスク</div>
-            <div v-for="childEvent of childEvents">
-                <ChildEventListItem :calendarEvent="childEvent" :indent-count="1" />
+            <div v-if="childEventIdList !== undefined && childEventIdList.length > 0" class="text">子タスク</div>
+            <div v-for="childEventId of childEventIdList">
+                <ChildEventListItem :calendar-event-id="childEventId" :indent-count="1" />
             </div>
         </div>
         <div>
