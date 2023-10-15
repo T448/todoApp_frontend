@@ -55,4 +55,34 @@ const stopEvent = () => {
 .list-item {
     margin-left: calc(50px * var(--indent-count));
 }
+
+.overlay {
+    /*　画面全体を覆う設定　*/
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+
+    /*　画面の中央に要素を表示させる設定　*/
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.content {
+    max-width: 50%;
+    max-height: 50%;
+    background: #fff;
+}
+
+.overlay-event-detail {
+    z-index: 1;
+}
+
+.content-event-detail {
+    z-index: 2;
+}
 </style>
