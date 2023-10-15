@@ -46,8 +46,8 @@ document.addEventListener('keydown', e => {
             </td>
         </tr>
     </table>
-    <div v-if="showAddProjectDialogRef" @click.stop="closeAddProjectDialog" class="overlay">
-        <div class="content" @click="stopEvent">
+    <div v-if="showAddProjectDialogRef" @click.stop="closeAddProjectDialog" class="overlay overlay-z">
+        <div class="content content-z" @click="stopEvent">
             <AddProjectDialog @close-dialog="closeAddProjectDialog" />
         </div>
 
@@ -93,5 +93,13 @@ tr {
     max-width: 50%;
     max-height: 50%;
     background: #fff;
+}
+
+.overlay-z {
+    z-index: 1;
+}
+
+.content-z {
+    z-index: 2;
 }
 </style>
