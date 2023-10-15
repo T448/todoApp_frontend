@@ -22,9 +22,11 @@ const memo = ref(props.calendarEvent.memo);
 const start = ref(new Date(props.calendarEvent.start));
 const end = ref(new Date(props.calendarEvent.end));
 const childEventIdList = ref(props.calendarEvent.childEventIdList);
+const projectId = ref(props.calendarEvent.projectId);
 const projectColor = ref(props.calendarEvent.projectColor);
 const projectName = ref(props.calendarEvent.projectName);
 const showAddEventDialogRef = ref(false);
+const eventId = ref(props.calendarEvent.id);
 
 const showAddEventDialog = () => {
     showAddEventDialogRef.value = true;
@@ -67,8 +69,9 @@ document.addEventListener('keydown', e => {
     </div>
     <div v-if="showAddEventDialogRef" @click.stop="closeAddEventDialog" class="overlay overlay-add-event">
         <div class="content content-add-event" @click="stopEvent">
-            <AddEventDialog @close-dialog="closeAddEventDialog" :parent-event-project-name="projectName"
-                :parent-event-project-color="projectColor" />
+            <AddEventDialog @close-dialog="closeAddEventDialog" :parent-event-project-id="projectId"
+                :parent-event-project-name="projectName" :parent-event-project-color="projectColor"
+                :parent-event-id="eventId" />
         </div>
     </div>
 </template>
