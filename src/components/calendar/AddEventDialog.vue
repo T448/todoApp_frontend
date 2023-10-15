@@ -3,7 +3,8 @@ import { Ref, computed, ref } from 'vue';
 import { useProjectStore } from '../../stores/projectStore';
 import { getCookies } from "typescript-cookie";
 import axios from "axios";
-
+import { MdEditor } from 'md-editor-v3';
+import 'md-editor-v3/lib/style.css';
 
 type project = {
     id: string,
@@ -34,7 +35,8 @@ const cancel = () => {
     emits('closeDialog');
 }
 const eventTitle: Ref<string | number | string[] | undefined> = ref();
-const memo: Ref<string | number | string[] | undefined> = ref();
+// const memo: Ref<string | number | string[] | undefined> = ref();
+const memo = ref('# Plan\n- \n# Do\n- \n# Check\n- \n# Action\n- \n');
 const isAllDay = ref(false);
 const startDate: Ref<Date | undefined> = ref();
 const startDatetimeLocal: Ref<Date | undefined> = ref();
@@ -128,7 +130,8 @@ const addEvent = () => {
                 <input type="datetime-local" v-model="endDatetimeLocal">
             </div>
             <span style="color: white;">{{ eventTitle }}</span>
-            <textarea v-model="memo" @input="memo = $event.target.value" placeholder="メモ" class="memo-input"></textarea>
+            <!-- <textarea v-model="memo" @input="memo = $event.target.value" placeholder="メモ" class="memo-input"></textarea> -->
+            <MdEditor v-model="memo" theme="dark" language="en-US" />
             <div v-if="parentEventProjectColorRef">
                 <span v-bind:style="{ color: parentEventProjectColorRef }">●</span>
                 <span>{{ parentEventProjectNameRef }}</span>
@@ -205,10 +208,19 @@ textarea:focus-within {
 .dialog {
     text-align: center;
     background-color: #35363a;
-    width: 400px;
-    height: 300px;
+    width: 1200px;
+    height: 600px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+}
+</style>
+<style>
+.cm-line {
+    text-align: left;
+}
+
+.md-editor-preview {
+    text-align: left;
 }
 </style>
