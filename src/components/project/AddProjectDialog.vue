@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { Ref, ref } from 'vue';
 import { getCookies } from 'typescript-cookie';
 import axios from 'axios';
 
@@ -10,29 +10,25 @@ const cancel = () => {
     emits('closeDialog');
 }
 
-const projectColorListRef = ref(new Set(["#ff0000", "#00ff00", "#0000ff"]));
-const projectColor = ref("#00ff00");
+// const projectColorListRef = ref(new Set(["#ff0000", "#00ff00", "#0000ff"]));
 const projectTitle: Ref<string | number | string[] | undefined> = ref();
 const memo: Ref<string | number | string[] | undefined> = ref();
 
 type projectRequest = {
     name: string,
-    color: string,
     memo: string
 }
 
 const addNewProject = () => {
-    const selectedColor = <HTMLInputElement>document.getElementById("projectColor");
-    projectColorListRef.value.add(selectedColor.value);
-
     const cookies = getCookies();
     const header = { "sessionID": cookies.sessionID };
-    const newProject: projectRequest = {
-        name: projectTitle.value,
-        color: selectedColor.value,
-        memo: memo.value
-    }
-    if (projectTitle.value !== undefined && projectTitle.value !== null && projectTitle.value !== "") {
+    const projectTitleVal = projectTitle.value;
+    const memoVal = memo.value?.toString();
+    if (typeof projectTitleVal == "string" && projectTitle.value !== null && projectTitle.value !== "" && memoVal !== undefined) {
+        const newProject: projectRequest = {
+            name: projectTitleVal,
+            memo: memoVal
+        }
         axios.post("http://localhost:8080/api/project", newProject, { headers: header, withCredentials: true })
             .then((res) => {
                 console.log("add new project");
@@ -52,10 +48,6 @@ const addNewProject = () => {
             <textarea v-model="projectTitle" @input="projectTitle = $event.target.value" placeholder="プロジェクト名"
                 class="project-input"></textarea>
             <textarea v-model="memo" @input="memo = $event.target.value" placeholder="メモ" class="memo-input"></textarea>
-            <input id="projectColor" type="color" list="color-picker" :value="projectColor">
-            <datalist id="color-picker">
-                <option v-for="color of  projectColorListRef" :value=color></option>
-            </datalist>
         </div>
         <div>
             <button @click="addNewProject">追加</button>
