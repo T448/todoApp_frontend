@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { Ref, computed, ref } from 'vue';
 import { useProjectStore } from '../../stores/projectStore';
+import { getCookies } from "typescript-cookie";
+import axios from "axios";
+
 
 type project = {
     id: string,
@@ -18,8 +21,10 @@ const projectList = computed(() => {
 })
 
 const props = defineProps<{
+    parentEventProjectId?: String,
     parentEventProjectName?: String,
-    parentEventProjectColor?: String
+    parentEventProjectColor?: String,
+    parentEventId?: String
 }>();
 
 const emits = defineEmits<{
@@ -37,10 +42,13 @@ const endDate: Ref<Date | undefined> = ref();
 const endDatetimeLocal: Ref<Date | undefined> = ref();
 
 
+const parentEventProjectIdRef = ref(props.parentEventProjectId);
 const parentEventProjectNameRef = ref(props.parentEventProjectName);
 const parentEventProjectColorRef: Ref<String | undefined> = ref(props.parentEventProjectColor);
-
-const selectedProject: Ref<project | undefined> = ref(projectList.value.at(0));
+const parentEventIdRef = ref(props.parentEventId);
+// NOTE : 親イベントがないときのデフォルト値として設定している。
+// 親イベントがあるときに誤って使用しないように。
+const selectedProject: Ref<project | undefined> = ref(projectStore.generalProject);
 const selectedProjectColor = computed(() => {
     if (selectedProject.value !== undefined) {
         return selectedProject.value.color;
@@ -53,6 +61,50 @@ console.log(props.parentEventProjectColor);
 const addEvent = () => {
     console.log('startDate');
     console.log(startDate.value);
+    let projectId = "";
+    if (parentEventProjectIdRef.value) {
+        console.log("親イベントあり");
+        projectId = parentEventProjectIdRef.value.toString();
+    } else if (selectedProject.value?.id) {
+        console.log("親イベントなし");
+        projectId = selectedProject.value?.id;
+    } else {
+        alert("イベント追加に失敗");
+        return;
+    }
+    let start: String | undefined;
+    let end: String | undefined;
+    if (isAllDay.value) {
+        start = startDate.value + "T0:00:00";
+        end = endDate.value + "T0:00:00";
+    } else {
+        if (startDatetimeLocal.value !== undefined) {
+            start = startDatetimeLocal.value.toString() + ":00";
+            end = endDatetimeLocal.value?.toString() + ":00";
+        }
+    }
+    let parentEventId = "";
+    if (parentEventIdRef.value) {
+        parentEventId = parentEventIdRef.value.toString();
+    }
+    console.log("start");
+    console.log(start);
+    console.log("parentEventId");
+    console.log(parentEventId);
+
+    const cookies = getCookies();
+    const header = { "sessionID": cookies.sessionID };
+    const newEvent = {
+        name: eventTitle.value,
+        memo: memo.value,
+        projectId: projectId,
+        parentEventId: parentEventId,
+        startDateTime: start,
+        endDateTime: end,
+        timeZone: "Asia/Tokyo"
+    }
+    axios.post('http://localhost:8080/api/events', newEvent, { headers: header, withCredentials: true })
+
 }
 </script>
 
