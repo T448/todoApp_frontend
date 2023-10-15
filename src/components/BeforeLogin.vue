@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { getCookies, removeCookie } from 'typescript-cookie';
+import { getCookies, removeCookie, getCookie } from 'typescript-cookie';
 import axios from 'axios';
 
 const router = useRouter();
@@ -37,16 +37,18 @@ const login = () => {
 
 const useGoogleLogin = () => {
     const w = window.open(loginURL, loginWindowName);
+    let counter = 0;
     const timer = setInterval(() => {
         if (w == null) return;
         const windowKeySet = new Set(Object.keys(w));
         if (windowKeySet.has('name') && w.name == loginWindowName) {
-            // NOTE : router.tsのsetCookieが終わる前に閉じてはいけない?
-            setTimeout(() => {
+            if (getCookie("sessionID") != undefined || counter == 16) {
                 w.close();
                 router.push({ name: 'main' });
                 clearInterval(timer);
-            }, 100)
+            } else {
+                counter++;
+            }
         } else if (w.closed) {
             clearInterval(timer);
         } else {
