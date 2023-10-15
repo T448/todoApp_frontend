@@ -25,23 +25,24 @@ export const useEventStore = defineStore('calendarEvents', {
                 end.setHours(end.getHours() - 9);
                 createdAt.setHours(createdAt.getHours() - 9);
                 updatedAt.setHours(updatedAt.getHours() - 9);
-
-                this.calendarEvents.set(item.id, {
-                    id: item.id,
-                    email: item.email,
-                    title: item.title,
-                    shortTitle: item.shortTitle,
-                    projectId: item.projectId,
-                    projectName: item.projectName,
-                    projectColor: item.projectColor,
-                    parentEventId: item.parentEventId,
-                    childEventIdList: item.childEventIdList,
-                    memo: item.memo,
-                    start: start,
-                    end: end,
-                    createdAt: createdAt,
-                    updatedAt: updatedAt
-                } as calendarEventBase);
+                if (!this.calendarEvents.has(item.id)) {
+                    this.calendarEvents.set(item.id, {
+                        id: item.id,
+                        email: item.email,
+                        title: item.title,
+                        shortTitle: item.shortTitle,
+                        projectId: item.projectId,
+                        projectName: item.projectName,
+                        projectColor: item.projectColor,
+                        parentEventId: item.parentEventId,
+                        childEventIdList: item.childEventIdList,
+                        memo: item.memo,
+                        start: start,
+                        end: end,
+                        createdAt: createdAt,
+                        updatedAt: updatedAt
+                    } as calendarEventBase);
+                }
             })
         },
         clear() {
