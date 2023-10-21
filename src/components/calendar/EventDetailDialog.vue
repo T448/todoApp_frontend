@@ -4,6 +4,8 @@ import { calendarEventBase, defaultEvent00 } from '../../type/event';
 import { dateTimeConverter } from '../../modules/dateTimeConverter';
 import ChildEventListItem from './ChildEventListItem.vue';
 import AddEventDialog from './AddEventDialog.vue';
+import { MdEditor, MdPreview } from 'md-editor-v3';
+import 'md-editor-v3/lib/style.css';
 
 interface Props {
     calendarEvent: calendarEventBase;
@@ -19,14 +21,19 @@ const close = () => {
 }
 const eventTitle = ref(props.calendarEvent.title);
 const memo = ref(props.calendarEvent.memo);
-const start = ref(new Date(props.calendarEvent.start));
-const end = ref(new Date(props.calendarEvent.end));
+const start = ref(dateTimeConverter(props.calendarEvent.start));
+const end = ref(dateTimeConverter(props.calendarEvent.end));
 const childEventIdList = ref(props.calendarEvent.childEventIdList);
 const projectId = ref(props.calendarEvent.projectId);
 const projectColor = ref(props.calendarEvent.projectColor);
 const projectName = ref(props.calendarEvent.projectName);
 const showAddEventDialogRef = ref(false);
 const eventId = ref(props.calendarEvent.id);
+
+const eventTitleBeforeEdit = ref("");
+const startBeforeEdit = ref("");
+const endBeforeEdit = ref("");
+const memoBeforeEdit = ref("");
 
 const showAddEventDialog = () => {
     showAddEventDialogRef.value = true;
@@ -42,16 +49,47 @@ document.addEventListener('keydown', e => {
         closeAddEventDialog();
     }
 })
+
+const editModeRef = ref(false);
+const go2editMode = () => {
+    editModeRef.value = true;
+    eventTitleBeforeEdit.value = eventTitle.value;
+    startBeforeEdit.value = start.value;
+    endBeforeEdit.value = end.value;
+    memoBeforeEdit.value = memo.value;
+}
+const finishEdit = () => {
+    editModeRef.value = false;
+}
+const cancelEdit = () => {
+    eventTitle.value = eventTitleBeforeEdit.value;
+    start.value = startBeforeEdit.value;
+    end.value = endBeforeEdit.value;
+    memo.value = memoBeforeEdit.value;
+    finishEdit();
+}
 </script>
 
 
 <template>
     <div class="dialog">
         <div>
-            <div class="text" v-bind:style="{ background: projectColor }">{{ eventTitle }}</div>
-            <div class="text">{{ dateTimeConverter(start) }}</div>
-            <div class="text">{{ dateTimeConverter(end) }}</div>
-            <div class="text">{{ memo }}</div>
+            <div class="text" v-bind:style="{ background: projectColor }">
+                <span v-if="!editModeRef">{{ eventTitle }}</span>
+                <textarea v-if="editModeRef" v-model="eventTitle"></textarea>
+            </div>
+            <div class="text">
+                <span>開始 : </span>
+                <span v-if="!editModeRef">{{ start.replace("T", " ") }}</span>
+                <input v-if="editModeRef" v-model="start" type="datetime-local">
+            </div>
+            <div class="text">
+                <span>終了 : </span>
+                <span v-if="!editModeRef">{{ end.replace("T", " ") }}</span>
+                <input v-if="editModeRef" v-model="end" type="datetime-local">
+            </div>
+            <MdEditor v-if="editModeRef" v-model="memo" theme="dark" language="en-US" />
+            <MdPreview v-if="!editModeRef" v-model="memo" theme="dark" language="en-US" />
         </div>
         <div>
             <!-- TODO : クリックで子タスクの詳細に飛べるようにする -->
@@ -63,8 +101,12 @@ document.addEventListener('keydown', e => {
         </div>
         <div>
             <!-- <button @click="emits('showAddEventDialog')">子タスクを追加</button> -->
-            <button @click="showAddEventDialog">子タスクを追加</button>
-            <button @click="close">閉じる</button>
+            <button v-if="!editModeRef" @click="showAddEventDialog">子タスクを追加</button>
+            <button v-if="!editModeRef" @click="go2editMode">編集</button>
+            <button v-if="editModeRef" @click="finishEdit">完了</button>
+            <button v-if="!editModeRef">削除</button>
+            <button v-if="editModeRef" @click="cancelEdit">キャンセル</button>
+            <button v-if="!editModeRef" @click="close">閉じる</button>
         </div>
     </div>
     <div v-if="showAddEventDialogRef" @click.stop="closeAddEventDialog" class="overlay overlay-add-event">
@@ -80,8 +122,8 @@ document.addEventListener('keydown', e => {
 .dialog {
     text-align: center;
     background-color: #35363a;
-    width: 400px;
-    min-height: 300px;
+    width: 1200px;
+    height: 600px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
