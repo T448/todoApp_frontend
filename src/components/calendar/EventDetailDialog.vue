@@ -6,6 +6,7 @@ import ChildEventListItem from './ChildEventListItem.vue';
 import AddEventDialog from './AddEventDialog.vue';
 import { MdEditor, MdPreview } from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
+import { updateEvent, updateEventRequest } from '../../modules/eventAPI';
 
 interface Props {
     calendarEvent: calendarEventBase;
@@ -60,6 +61,16 @@ const go2editMode = () => {
 }
 const finishEdit = () => {
     editModeRef.value = false;
+    const request: updateEventRequest = {
+        eventId: eventId.value,
+        name: eventTitle.value,
+        memo: memo.value,
+        projectId: projectId.value,
+        startDateTime: start.value,
+        endDateTime: end.value,
+        timeZone: 'Asia/Tokyo'
+    }
+    updateEvent(request);
 }
 const cancelEdit = () => {
     eventTitle.value = eventTitleBeforeEdit.value;
