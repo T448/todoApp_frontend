@@ -1,29 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import EventDetailDialog from './EventDetailDialog.vue';
-// type calendarEvent = {
-//     id: string,
-//     title: string,
-//     startDate: Date,
-//     endDate: Date,
-//     memo?: string,
-//     children?: calendarEvent[]
-// }
-type calendarEventBase = {
-    id: string,
-    email: string,
-    title: string,
-    shortTitle: string,
-    projectId: string,
-    projectColor: string,
-    parentEventId: string,
-    childEventIdList: string[],
-    memo: string,
-    start: Date,
-    end: Date,
-    createdAt: Date,
-    updatedAt: Date,
-}
+import { calendarEventBase } from '../../type/event';
 
 const props = defineProps<{
     date: Number,
