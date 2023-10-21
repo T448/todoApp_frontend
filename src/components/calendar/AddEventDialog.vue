@@ -25,7 +25,8 @@ const props = defineProps<{
     parentEventProjectId?: String,
     parentEventProjectName?: String,
     parentEventProjectColor?: String,
-    parentEventId?: String
+    parentEventId?: String,
+    start?: String
 }>();
 
 const emits = defineEmits<{
@@ -37,9 +38,9 @@ const cancel = () => {
 const eventTitle: Ref<string | number | string[] | undefined> = ref();
 // const memo: Ref<string | number | string[] | undefined> = ref();
 const memo = ref('# Plan\n- \n# Do\n- \n# Check\n- \n# Action\n- \n');
-const isAllDay = ref(false);
-const startDate: Ref<Date | undefined> = ref();
-const startDatetimeLocal: Ref<Date | undefined> = ref();
+const isAllDay = ref(true);
+const startDate: Ref<String | undefined> = ref(props.start);
+const startDatetimeLocal: Ref<String | undefined> = ref(props.start + "T00:00");
 const endDate: Ref<Date | undefined> = ref();
 const endDatetimeLocal: Ref<Date | undefined> = ref();
 
@@ -129,8 +130,6 @@ const addEvent = () => {
                 <span style="color: white;margin-left: 10px;margin-right: 10px;">~</span>
                 <input type="datetime-local" v-model="endDatetimeLocal">
             </div>
-            <span style="color: white;">{{ eventTitle }}</span>
-            <!-- <textarea v-model="memo" @input="memo = $event.target.value" placeholder="メモ" class="memo-input"></textarea> -->
             <MdEditor v-model="memo" theme="dark" language="en-US" />
             <div v-if="parentEventProjectColorRef">
                 <span v-bind:style="{ color: parentEventProjectColorRef }">●</span>

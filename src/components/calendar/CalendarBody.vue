@@ -193,7 +193,7 @@ const go2today = () => {
         <tbody>
             <tr v-for="week of  maxWeeks " v-bind:style="{ height: cellHeight }">
                 <td v-for=" day  of  7 " v-bind:style="{ width: cellWidth }">
-                    <OneDay :date="computedDateList[7 * (week - 1) + day - 1].date"
+                    <OneDay :date="computedDateList[7 * (week - 1) + day - 1]"
                         :calendar-events="computedCalendarEventList[7 * (week - 1) + day - 1]"
                         @show-add-event-dialog="showAddEventDialog" />
                 </td>
