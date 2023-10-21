@@ -1,39 +1,40 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import EventDetailDialog from './EventDetailDialog.vue';
-// type calendarEvent = {
-//     id: string,
-//     title: string,
-//     startDate: Date,
-//     endDate: Date,
-//     memo?: string,
-//     children?: calendarEvent[]
-// }
-type calendarEventBase = {
-    id: string,
-    email: string,
-    title: string,
-    shortTitle: string,
-    projectId: string,
-    projectColor: string,
-    parentEventId: string,
-    childEventIdList: string[],
-    memo: string,
-    start: Date,
-    end: Date,
-    createdAt: Date,
-    updatedAt: Date,
+import { calendarEventBase } from '../../type/event';
+import AddEventDialog from './AddEventDialog.vue';
+
+// 日付の配列の作成
+type ymd = {
+    year: number,
+    month: number,
+    date: number
 }
 
 const props = defineProps<{
-    date: Number,
+    date: ymd,
     calendarEvents?: Array<calendarEventBase>,
 }>();
 const emits = defineEmits<{
     (e: 'showAddEventDialog'): void
 }>();
 const eventsRef = computed(() => props.calendarEvents);
-
+const ymdStr = computed(() => {
+    const yearStr = String(props.date.year);
+    let monthStr = "";
+    if (props.date.month < 9) {
+        monthStr = "0" + String(props.date.month + 1);
+    } else {
+        monthStr = String(props.date.month + 1);
+    }
+    let dateStr = "";
+    if (props.date.date < 9) {
+        dateStr = "0" + String(props.date.date);
+    } else {
+        dateStr = String(props.date.date);
+    }
+    return yearStr + "-" + monthStr + "-" + dateStr;
+});
 
 const showAddButton = ref(false);
 const addEventButtonMouseOver = () => {
@@ -44,8 +45,13 @@ const addEventButtonMouseLeave = () => {
 }
 
 
-const onClickAddButton = () => {
-    emits('showAddEventDialog');
+const showAddEventDialogRef = ref(false);
+
+const showAddEventDialog = () => {
+    showAddEventDialogRef.value = true;
+};
+const closeAddEventDialog = () => {
+    showAddEventDialogRef.value = false;
 }
 // eventsRef.value = [defaultEvent2];
 const showEventDetailRef = ref(false);
@@ -63,7 +69,12 @@ const stopEvent = () => {
 }
 document.addEventListener('keydown', e => {
     if (e.key === "Escape") {
-        closeEventDetail();
+        if (showAddEventDialogRef.value) {
+            closeAddEventDialog();
+        }
+        if (showEventDetailRef) {
+            closeEventDetail();
+        }
     }
 })
 </script>
@@ -71,7 +82,7 @@ document.addEventListener('keydown', e => {
 <template>
     <div class="one-day">
         <div class="date">
-            {{ date }}
+            {{ date.date }}
         </div>
         <div v-for="(event, index) of eventsRef" class="task" v-bind:style="{ backgroundColor: event.projectColor }">
             <input type="checkbox" :key="index">
@@ -84,11 +95,16 @@ document.addEventListener('keydown', e => {
         </div>
         <div v-on:mouseover="addEventButtonMouseOver" v-on:mouseleave="addEventButtonMouseLeave"
             style="text-align: center;">
-            <span v-if="showAddButton" @click="onClickAddButton"
+            <span v-if="showAddButton" @click="showAddEventDialog"
                 style="display: inline-block; width: 20x; height: 20px; border-radius: 50%; background: skyblue; text-align:center; line-height: 20px;">
                 +
             </span>
             <span v-else>-</span>
+        </div>
+        <div v-if="showAddEventDialogRef" @click.stop="closeAddEventDialog" class="overlay overlay-add-event">
+            <div class="content content-add-event" @click="stopEvent">
+                <AddEventDialog @close-dialog="closeAddEventDialog" :is-child-event="false" :start="ymdStr" />
+            </div>
         </div>
     </div>
 </template>
@@ -147,6 +163,14 @@ document.addEventListener('keydown', e => {
 }
 
 .content-event-detail {
+    z-index: 2;
+}
+
+.overlay-add-event {
+    z-index: 1;
+}
+
+.content-add-event {
     z-index: 2;
 }
 </style>
