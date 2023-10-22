@@ -240,4 +240,8 @@ textarea:focus-within {
 .md-editor-preview {
     text-align: left;
 }
+
+.md-editor {
+    height: 400px;
+}
 </style>

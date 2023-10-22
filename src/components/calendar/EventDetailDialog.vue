@@ -137,7 +137,7 @@ watch(selectedTemplateId, () => {
                 <span v-if="!editModeRef">{{ end.replace("T", " ") }}</span>
                 <input v-if="editModeRef" v-model="end" type="datetime-local">
             </div>
-            <div style="max-height: 400px;overflow-y: auto;">
+            <div>
                 <div v-if="editModeRef">
                     <select v-model="selectedTemplateId">
                         <option v-for="template of memoTemplateStore.template.values()" :value="template.id">{{
@@ -178,6 +178,13 @@ watch(selectedTemplateId, () => {
 </template>
 
 <style scoped>
+textarea {
+    width: 90%;
+    margin-top: 10px;
+    background-color: #202124;
+    color: white;
+}
+
 .dialog {
     text-align: center;
     background-color: #35363a;

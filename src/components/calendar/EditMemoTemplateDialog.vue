@@ -80,6 +80,13 @@ const confirm = () => {
     </div>
 </template>
 <style scoped>
+textarea {
+    width: 90%;
+    margin-top: 10px;
+    background-color: #202124;
+    color: white;
+}
+
 .dialog {
     text-align: center;
     background-color: #35363a;
