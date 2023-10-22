@@ -11,7 +11,7 @@ const select = (e: Event) => {
         <select name="modeSelector" class="mode-selector" @change="select">
             <option value="Calendar">Calendar</option>
             <option value="ListView">List</option>
-            <option value="TimelineView">Timeline</option>
+            <option value="TimelineView">Kanban</option>
             <option value="GanttChart">GanttChart</option>
         </select>
     </div>

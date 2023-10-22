@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { Ref, computed, ref } from 'vue';
+import { Ref, computed, ref, watch } from 'vue';
 import { useProjectStore } from '../../stores/projectStore';
 import { getCookies } from "typescript-cookie";
 import axios from "axios";
 import { MdEditor } from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
+import { useMemoTemplateStore } from '../../stores/memoTemplateStore';
 
 type project = {
     id: string,
@@ -20,6 +21,7 @@ const projectStore = useProjectStore();
 const projectList = computed(() => {
     return Array.from(projectStore.projects.values());
 })
+const memoTemplateStore = useMemoTemplateStore();
 
 const props = defineProps<{
     parentEventProjectId?: String,
@@ -37,7 +39,7 @@ const cancel = () => {
 }
 const eventTitle: Ref<string | number | string[] | undefined> = ref();
 // const memo: Ref<string | number | string[] | undefined> = ref();
-const memo = ref('# Plan\n- \n# Do\n- \n# Check\n- \n# Action\n- \n');
+const memo = ref('');
 const isAllDay = ref(true);
 const startDate: Ref<String | undefined> = ref(props.start);
 const startDatetimeLocal: Ref<String | undefined> = ref(props.start + "T00:00");
@@ -109,6 +111,15 @@ const addEvent = () => {
     axios.post('http://localhost:8080/api/events', newEvent, { headers: header, withCredentials: true })
 
 }
+const selectedTemplateId = ref('');
+watch(selectedTemplateId, () => {
+    if (memoTemplateStore.template.has(selectedTemplateId.value)) {
+        const appliedMemoTemplate = memoTemplateStore.template.get(selectedTemplateId.value);
+        if (appliedMemoTemplate !== undefined) {
+            memo.value = appliedMemoTemplate.template;
+        }
+    }
+})
 </script>
 
 <template>
@@ -130,7 +141,14 @@ const addEvent = () => {
                 <span style="color: white;margin-left: 10px;margin-right: 10px;">~</span>
                 <input type="datetime-local" v-model="endDatetimeLocal">
             </div>
-            <MdEditor v-model="memo" theme="dark" language="en-US" />
+            <div>
+                <select v-model="selectedTemplateId">
+                    <option v-for="template of memoTemplateStore.template.values()" :value="template.id">{{ template.name }}
+                    </option>
+                </select>
+                <MdEditor v-model="memo" theme="dark" language="en-US" />
+            </div>
+
             <div v-if="parentEventProjectColorRef">
                 <span v-bind:style="{ color: parentEventProjectColorRef }">●</span>
                 <span>{{ parentEventProjectNameRef }}</span>
@@ -221,5 +239,9 @@ textarea:focus-within {
 
 .md-editor-preview {
     text-align: left;
+}
+
+.md-editor {
+    height: 400px;
 }
 </style>

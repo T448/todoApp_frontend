@@ -5,7 +5,7 @@ import { computed, ref, Ref } from 'vue';
 import { useEventStore } from '../../stores/calendarStore';
 import moment from "moment"
 import { calendarEventBase } from '../../type/event';
-
+import EditMemoTemplateDialog from './EditMemoTemplateDialog.vue';
 const eventStore = useEventStore();
 eventStore.fetch(true);
 
@@ -166,6 +166,14 @@ const go2today = () => {
     thisYear.value = jstNow.getFullYear();
     thisMonth.value = jstNow.getMonth() + 1;
 }
+
+const showEditMemoTemplateDialogRef = ref(false);
+const showEditMemoTemplateDialog = () => {
+    showEditMemoTemplateDialogRef.value = true;
+}
+const closeEditMemoTemplateDialog = () => {
+    showEditMemoTemplateDialogRef.value = false;
+}
 </script>
 
 <template>
@@ -177,6 +185,7 @@ const go2today = () => {
             <button @click="go2today">today</button>
         </div>
         <div>
+            <button @click="showEditMemoTemplateDialog">add template</button>
             <img src="../../assets/icons8-add-50.png" class="month-button" @click="showAddEventDialog">
         </div>
     </div>
@@ -203,6 +212,12 @@ const go2today = () => {
     <div v-if="showAddEventDialogRef" @click.stop="closeAddEventDialog" class="overlay overlay-add-event">
         <div class="content content-add-event" @click="stopEvent">
             <AddEventDialog @close-dialog="closeAddEventDialog" :is-child-event="false" />
+        </div>
+    </div>
+    <div v-if="showEditMemoTemplateDialogRef" @click.stop="closeEditMemoTemplateDialog"
+        class="overlay overlay-edit-memo-template">
+        <div class="content content-edit-memo-template" @click="stopEvent">
+            <EditMemoTemplateDialog @close-dialog="closeEditMemoTemplateDialog" />
         </div>
     </div>
 </template>
@@ -257,5 +272,13 @@ const go2today = () => {
 
 .content-add-event {
     z-index: 4;
+}
+
+.overlay-edit-memo-template {
+    z-index: 5;
+}
+
+.content-edit-memo-template {
+    z-index: 6;
 }
 </style>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { calendarEventBase, defaultEvent00 } from '../../type/event';
 import { dateTimeConverter } from '../../modules/dateTimeConverter';
 import ChildEventListItem from './ChildEventListItem.vue';
@@ -8,12 +8,14 @@ import { MdEditor, MdPreview } from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
 import { updateEvent, updateEventRequest, deleteEvents } from '../../modules/eventAPI';
 import { useEventStore } from '../../stores/calendarStore';
+import { useMemoTemplateStore } from '../../stores/memoTemplateStore';
 
 interface Props {
     calendarEvent: calendarEventBase;
 }
 
 const eventStore = useEventStore();
+const memoTemplateStore = useMemoTemplateStore();
 
 const props = withDefaults(defineProps<Props>(), { calendarEvent: () => defaultEvent00 });
 
@@ -105,6 +107,16 @@ const getDeepChildEventIdList = (id: string) => {
     getChildEventIdMap(id, childEventIdMap, 0);
     return Array.from((new Map([...childEventIdMap].sort((a, b) => b[1] - a[1]))).keys());
 }
+
+const selectedTemplateId = ref('');
+watch(selectedTemplateId, () => {
+    if (memoTemplateStore.template.has(selectedTemplateId.value)) {
+        const appliedMemoTemplate = memoTemplateStore.template.get(selectedTemplateId.value);
+        if (appliedMemoTemplate !== undefined) {
+            memo.value = appliedMemoTemplate.template;
+        }
+    }
+})
 </script>
 
 
@@ -125,22 +137,30 @@ const getDeepChildEventIdList = (id: string) => {
                 <span v-if="!editModeRef">{{ end.replace("T", " ") }}</span>
                 <input v-if="editModeRef" v-model="end" type="datetime-local">
             </div>
-            <div style="max-height: 400px;overflow-y: auto;">
-                <MdEditor v-if="editModeRef" v-model="memo" theme="dark" language="en-US" />
-                <MdPreview v-if="!editModeRef" v-model="memo" theme="dark" language="en-US" />
+            <div>
+                <div v-if="editModeRef">
+                    <select v-model="selectedTemplateId">
+                        <option v-for="template of memoTemplateStore.template.values()" :value="template.id">{{
+                            template.name }}</option>
+                    </select>
+                    <MdEditor v-model="memo" theme="dark" language="en-US" />
+                </div>
+                <div v-if="!editModeRef">
+                    <MdPreview v-model="memo" theme="dark" language="en-US" />
+                </div>
             </div>
         </div>
         <div>
             <!-- TODO : クリックで子タスクの詳細に飛べるようにする -->
             <!-- TODO : 子タスクの一覧を出すトグルボタンをつける -->
-            <div v-if="childEventIdList !== undefined && childEventIdList.length > 0" class="text">子タスク</div>
+            <div v-if="childEventIdList !== undefined && childEventIdList.length > 0" class="text">子イベント</div>
             <div v-for="childEventId of childEventIdList">
                 <ChildEventListItem :calendar-event-id="childEventId" :indent-count="1" />
             </div>
         </div>
         <div>
             <!-- <button @click="emits('showAddEventDialog')">子タスクを追加</button> -->
-            <button v-if="!editModeRef" @click="showAddEventDialog">子タスクを追加</button>
+            <button v-if="!editModeRef" @click="showAddEventDialog">子イベント追加</button>
             <button v-if="!editModeRef" @click="go2editMode">編集</button>
             <button v-if="editModeRef" @click="finishEdit">完了</button>
             <button v-if="!editModeRef" @click="deleteEvent">削除</button>
@@ -158,6 +178,13 @@ const getDeepChildEventIdList = (id: string) => {
 </template>
 
 <style scoped>
+textarea {
+    width: 90%;
+    margin-top: 10px;
+    background-color: #202124;
+    color: white;
+}
+
 .dialog {
     text-align: center;
     background-color: #35363a;
