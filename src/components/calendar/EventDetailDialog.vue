@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { calendarEventBase, defaultEvent00 } from '../../type/event';
 import { dateTimeConverter } from '../../modules/dateTimeConverter';
 import ChildEventListItem from './ChildEventListItem.vue';
@@ -8,12 +8,14 @@ import { MdEditor, MdPreview } from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
 import { updateEvent, updateEventRequest, deleteEvents } from '../../modules/eventAPI';
 import { useEventStore } from '../../stores/calendarStore';
+import { useMemoTemplateStore } from '../../stores/memoTemplateStore';
 
 interface Props {
     calendarEvent: calendarEventBase;
 }
 
 const eventStore = useEventStore();
+const memoTemplateStore = useMemoTemplateStore();
 
 const props = withDefaults(defineProps<Props>(), { calendarEvent: () => defaultEvent00 });
 
@@ -105,6 +107,16 @@ const getDeepChildEventIdList = (id: string) => {
     getChildEventIdMap(id, childEventIdMap, 0);
     return Array.from((new Map([...childEventIdMap].sort((a, b) => b[1] - a[1]))).keys());
 }
+
+const selectedTemplateId = ref('');
+watch(selectedTemplateId, () => {
+    if (memoTemplateStore.template.has(selectedTemplateId.value)) {
+        const appliedMemoTemplate = memoTemplateStore.template.get(selectedTemplateId.value);
+        if (appliedMemoTemplate !== undefined) {
+            memo.value = appliedMemoTemplate.template;
+        }
+    }
+})
 </script>
 
 
@@ -126,8 +138,16 @@ const getDeepChildEventIdList = (id: string) => {
                 <input v-if="editModeRef" v-model="end" type="datetime-local">
             </div>
             <div style="max-height: 400px;overflow-y: auto;">
-                <MdEditor v-if="editModeRef" v-model="memo" theme="dark" language="en-US" />
-                <MdPreview v-if="!editModeRef" v-model="memo" theme="dark" language="en-US" />
+                <div v-if="editModeRef">
+                    <select v-model="selectedTemplateId">
+                        <option v-for="template of memoTemplateStore.template.values()" :value="template.id">{{
+                            template.name }}</option>
+                    </select>
+                    <MdEditor v-model="memo" theme="dark" language="en-US" />
+                </div>
+                <div v-if="!editModeRef">
+                    <MdPreview v-model="memo" theme="dark" language="en-US" />
+                </div>
             </div>
         </div>
         <div>
