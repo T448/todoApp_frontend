@@ -79,11 +79,11 @@ const addEvent = () => {
     let end: String | undefined;
     if (isAllDay.value) {
         start = startDate.value + "T0:00:00";
-        end = endDate.value + "T0:00:00";
+        end = endDate.value + "T23:59:59";
     } else {
         if (startDatetimeLocal.value !== undefined) {
             start = startDatetimeLocal.value.toString() + ":00";
-            end = endDatetimeLocal.value?.toString() + ":00";
+            end = endDatetimeLocal.value?.toString() + ":59";
         }
     }
     let parentEventId = "";

@@ -80,7 +80,7 @@ const cancelEdit = () => {
     start.value = startBeforeEdit.value;
     end.value = endBeforeEdit.value;
     memo.value = memoBeforeEdit.value;
-    finishEdit();
+    editModeRef.value = false;
 }
 
 const deleteEvent = () => {
