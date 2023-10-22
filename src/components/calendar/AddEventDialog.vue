@@ -39,7 +39,7 @@ const cancel = () => {
 }
 const eventTitle: Ref<string | number | string[] | undefined> = ref();
 // const memo: Ref<string | number | string[] | undefined> = ref();
-const memo = ref('# Plan\n- \n# Do\n- \n# Check\n- \n# Action\n- \n');
+const memo = ref('');
 const isAllDay = ref(true);
 const startDate: Ref<String | undefined> = ref(props.start);
 const startDatetimeLocal: Ref<String | undefined> = ref(props.start + "T00:00");

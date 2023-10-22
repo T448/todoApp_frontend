@@ -153,14 +153,14 @@ watch(selectedTemplateId, () => {
         <div>
             <!-- TODO : クリックで子タスクの詳細に飛べるようにする -->
             <!-- TODO : 子タスクの一覧を出すトグルボタンをつける -->
-            <div v-if="childEventIdList !== undefined && childEventIdList.length > 0" class="text">子タスク</div>
+            <div v-if="childEventIdList !== undefined && childEventIdList.length > 0" class="text">子イベント</div>
             <div v-for="childEventId of childEventIdList">
                 <ChildEventListItem :calendar-event-id="childEventId" :indent-count="1" />
             </div>
         </div>
         <div>
             <!-- <button @click="emits('showAddEventDialog')">子タスクを追加</button> -->
-            <button v-if="!editModeRef" @click="showAddEventDialog">子タスクを追加</button>
+            <button v-if="!editModeRef" @click="showAddEventDialog">子イベント追加</button>
             <button v-if="!editModeRef" @click="go2editMode">編集</button>
             <button v-if="editModeRef" @click="finishEdit">完了</button>
             <button v-if="!editModeRef" @click="deleteEvent">削除</button>
