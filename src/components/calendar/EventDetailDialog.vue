@@ -6,11 +6,14 @@ import ChildEventListItem from './ChildEventListItem.vue';
 import AddEventDialog from './AddEventDialog.vue';
 import { MdEditor, MdPreview } from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
-import { updateEvent, updateEventRequest } from '../../modules/eventAPI';
+import { updateEvent, updateEventRequest, deleteEvents } from '../../modules/eventAPI';
+import { useEventStore } from '../../stores/calendarStore';
 
 interface Props {
     calendarEvent: calendarEventBase;
 }
+
+const eventStore = useEventStore();
 
 const props = withDefaults(defineProps<Props>(), { calendarEvent: () => defaultEvent00 });
 
@@ -79,6 +82,29 @@ const cancelEdit = () => {
     memo.value = memoBeforeEdit.value;
     finishEdit();
 }
+
+const deleteEvent = () => {
+    deleteEvents(projectId.value, getDeepChildEventIdList(props.calendarEvent.id));
+    close();
+}
+
+const getDeepChildEventIdList = (id: string) => {
+    // key:eventId,value:layer
+    const childEventIdMap: Map<string, number> = new Map();
+    const getChildEventIdMap = (id: string, childEventIdMap: Map<string, number>, layer: number) => {
+        const targetEvent = eventStore.calendarEvents.get(id);
+        if (targetEvent !== undefined) {
+            childEventIdMap.set(id, layer);
+            if (targetEvent.childEventIdList.length > 0) {
+                targetEvent.childEventIdList.forEach(childEventId => {
+                    getChildEventIdMap(childEventId, childEventIdMap, layer + 1);
+                })
+            }
+        }
+    }
+    getChildEventIdMap(id, childEventIdMap, 0);
+    return Array.from((new Map([...childEventIdMap].sort((a, b) => b[1] - a[1]))).keys());
+}
 </script>
 
 
@@ -99,8 +125,10 @@ const cancelEdit = () => {
                 <span v-if="!editModeRef">{{ end.replace("T", " ") }}</span>
                 <input v-if="editModeRef" v-model="end" type="datetime-local">
             </div>
-            <MdEditor v-if="editModeRef" v-model="memo" theme="dark" language="en-US" />
-            <MdPreview v-if="!editModeRef" v-model="memo" theme="dark" language="en-US" />
+            <div style="max-height: 400px;overflow-y: auto;">
+                <MdEditor v-if="editModeRef" v-model="memo" theme="dark" language="en-US" />
+                <MdPreview v-if="!editModeRef" v-model="memo" theme="dark" language="en-US" />
+            </div>
         </div>
         <div>
             <!-- TODO : クリックで子タスクの詳細に飛べるようにする -->
@@ -115,7 +143,7 @@ const cancelEdit = () => {
             <button v-if="!editModeRef" @click="showAddEventDialog">子タスクを追加</button>
             <button v-if="!editModeRef" @click="go2editMode">編集</button>
             <button v-if="editModeRef" @click="finishEdit">完了</button>
-            <button v-if="!editModeRef">削除</button>
+            <button v-if="!editModeRef" @click="deleteEvent">削除</button>
             <button v-if="editModeRef" @click="cancelEdit">キャンセル</button>
             <button v-if="!editModeRef" @click="close">閉じる</button>
         </div>

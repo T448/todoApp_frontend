@@ -21,3 +21,16 @@ export const updateEvent = (request: updateEventRequest) => {
         .then((res) => { console.log(res) })
         .catch((error) => { alert(error) });
 }
+
+export const deleteEvents = (projectId: string, eventIdList: string[]) => {
+    const cookies = getCookies();
+    const header = { "sessionID": cookies.sessionID };
+    const request = {
+        projectId: projectId,
+        eventIdList: eventIdList
+    }
+    axios
+        .delete('http://localhost:8080/api/events', { headers: header, withCredentials: true, data: request })
+        .then((res) => { console.log(res) })
+        .catch((error) => { alert(error) });
+}
