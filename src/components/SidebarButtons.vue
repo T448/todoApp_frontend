@@ -1,13 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { useRouter } from 'vue-router';
-import { useStoreCounter } from '../stores/counter';
 import { getCookies } from 'typescript-cookie';
-
-// store
-const counter = useStoreCounter();
-
-const router = useRouter()
 
 // sidebarのボタン用
 const home = () => {
@@ -28,27 +21,10 @@ const openSettings = () => {
 const logout = () => {
     console.log('logout');
 }
-const test = () => {
-    console.log("test");
-    counter.increment();
+const synchronize = () => {
     const cookies = getCookies();
     const header = { "sessionID": cookies.sessionID };
-    // axios
-    //     .post('http://localhost:8080/api/hoge', {}, { headers: header, withCredentials: true })
-    //     .then(res => {
-    //         console.log(res);
-    //     })
-    //     .catch(error => {
-    //         console.log(error.response);
-    //         if (error.response.status == 401) {
-    //             alert('セッションが無効です');
-    //         }
-    //         router.push('/app');
-    //     });;
-    axios.get('http://localhost:8080/api/projects', { headers: header, withCredentials: true })
-        .then(res => {
-            console.log(res)
-        })
+    axios.get('http://localhost:8080/api/synchronize', { headers: header, withCredentials: true });
 }
 </script>
 
@@ -59,7 +35,7 @@ const test = () => {
             <img src="../assets/icons8-notification-50.png" class='sideButton' @click="openNotification" />
             <img src="../assets/icons8-male-user-50.png" class='sideButton' @click="openUser" />
             <img src="../assets/icons8-search-50.png" class='sideButton' @click="openSearch" />
-            <button @click="test">テスト用</button>
+            <img src="../assets/icons8-refresh-50.png" class='sideButton' @click="synchronize" />
         </div>
         <div>
             <img src="../assets/icons8-settings-50.png" class='sideButton' @click="openSettings" />
