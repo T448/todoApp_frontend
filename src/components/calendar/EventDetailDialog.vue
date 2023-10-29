@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { Ref, ref, watch } from 'vue';
 import { calendarEventBase, defaultEvent00 } from '../../type/event';
 import { dateTimeConverter } from '../../modules/dateTimeConverter';
 import ChildEventListItem from './ChildEventListItem.vue';
@@ -27,8 +27,10 @@ const close = () => {
 }
 const eventTitle = ref(props.calendarEvent.title);
 const memo = ref(props.calendarEvent.memo);
-const start = ref(dateTimeConverter(props.calendarEvent.start));
-const end = ref(dateTimeConverter(props.calendarEvent.end));
+const startDate = ref(dateTimeConverter(props.calendarEvent.startDate));
+const endDate = ref(dateTimeConverter(props.calendarEvent.endDate));
+const startDateTime = ref(dateTimeConverter(props.calendarEvent.startDateTime));
+const endDateTime = ref(dateTimeConverter(props.calendarEvent.endDateTime));
 const childEventIdList = ref(props.calendarEvent.childEventIdList);
 const projectId = ref(props.calendarEvent.projectId);
 const projectColor = ref(props.calendarEvent.projectColor);
@@ -37,8 +39,10 @@ const showAddEventDialogRef = ref(false);
 const eventId = ref(props.calendarEvent.id);
 
 const eventTitleBeforeEdit = ref("");
-const startBeforeEdit = ref("");
-const endBeforeEdit = ref("");
+const startDateBeforeEdit: Ref<String | null> = ref("");
+const endDateBeforeEdit: Ref<String | null> = ref("");
+const startDateTimeBeforeEdit: Ref<String | null> = ref("");
+const endDateTimeBeforeEdit: Ref<String | null> = ref("");
 const memoBeforeEdit = ref("");
 
 const showAddEventDialog = () => {
@@ -60,27 +64,36 @@ const editModeRef = ref(false);
 const go2editMode = () => {
     editModeRef.value = true;
     eventTitleBeforeEdit.value = eventTitle.value;
-    startBeforeEdit.value = start.value;
-    endBeforeEdit.value = end.value;
+    startDateBeforeEdit.value = startDate.value;
+    endDateBeforeEdit.value = endDate.value;
+    startDateTimeBeforeEdit.value = startDateTime.value;
+    endDateTimeBeforeEdit.value = endDateTime.value;
     memoBeforeEdit.value = memo.value;
 }
 const finishEdit = () => {
     editModeRef.value = false;
+
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
     const request: updateEventRequest = {
         eventId: eventId.value,
         name: eventTitle.value,
         memo: memo.value,
         projectId: projectId.value,
-        startDateTime: start.value,
-        endDateTime: end.value,
-        timeZone: 'Asia/Tokyo'
+        startDate: startDate.value ?? "",
+        endDate: endDate.value ?? "",
+        startDateTime: startDateTime.value ?? "",
+        endDateTime: endDateTime.value ?? "",
+        timeZone: tz ?? ""
     }
     updateEvent(request);
 }
 const cancelEdit = () => {
     eventTitle.value = eventTitleBeforeEdit.value;
-    start.value = startBeforeEdit.value;
-    end.value = endBeforeEdit.value;
+    startDate.value = startDateBeforeEdit.value;
+    endDate.value = endDateBeforeEdit.value;
+    startDateTime.value = startDateTimeBeforeEdit.value;
+    endDateTime.value = endDateTimeBeforeEdit.value;
     memo.value = memoBeforeEdit.value;
     editModeRef.value = false;
 }
@@ -117,6 +130,8 @@ watch(selectedTemplateId, () => {
         }
     }
 })
+
+const isAllDay = ref(startDate.value !== null);
 </script>
 
 
@@ -128,14 +143,23 @@ watch(selectedTemplateId, () => {
                 <textarea v-if="editModeRef" v-model="eventTitle"></textarea>
             </div>
             <div class="text">
+                <span v-if="editModeRef">終日</span>
+                <input v-if="editModeRef" v-model="isAllDay" type="checkbox">
+            </div>
+            <div class="text">
                 <span>開始 : </span>
-                <span v-if="!editModeRef">{{ start.replace("T", " ") }}</span>
-                <input v-if="editModeRef" v-model="start" type="datetime-local">
+                <span v-if="!editModeRef && isAllDay && startDate !== null">{{ startDate.replace("T", " ") }}</span>
+                <input v-if="editModeRef && isAllDay" v-model="startDate" type="date">
+                <span v-if="!editModeRef && !isAllDay && startDateTime !== null">{{ startDateTime.replace("T", " ")
+                }}</span>
+                <input v-if="editModeRef && !isAllDay" v-model="startDateTime" type="datetime-local">
             </div>
             <div class="text">
                 <span>終了 : </span>
-                <span v-if="!editModeRef">{{ end.replace("T", " ") }}</span>
-                <input v-if="editModeRef" v-model="end" type="datetime-local">
+                <span v-if="!editModeRef && isAllDay && endDate !== null">{{ endDate.replace("T", " ") }}</span>
+                <input v-if="editModeRef && isAllDay" v-model="endDate" type="date">
+                <span v-if="!editModeRef && !isAllDay && endDateTime !== null">{{ endDateTime.replace("T", " ") }}</span>
+                <input v-if="editModeRef && !isAllDay" v-model="endDateTime" type="datetime-local">
             </div>
             <div>
                 <div v-if="editModeRef">

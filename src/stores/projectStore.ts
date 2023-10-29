@@ -25,8 +25,8 @@ export const useProjectStore = defineStore('projects', {
             res.data.forEach((item: project) => {
                 const createdAt = new Date(item.createdAt);
                 const updatedAt = new Date(item.updatedAt);
-                createdAt.setHours(createdAt.getHours() - 9);
-                updatedAt.setHours(updatedAt.getHours() - 9);
+                // createdAt.setHours(createdAt.getHours() - 9);
+                // updatedAt.setHours(updatedAt.getHours() - 9);
                 const projectObj = {
                     id: item.id,
                     name: item.name,

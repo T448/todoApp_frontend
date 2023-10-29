@@ -17,14 +17,29 @@ export const useEventStore = defineStore('calendarEvents', {
             const res = await axios
                 .get(`http://localhost:8080/api/events?all=${all}`, { headers: header, withCredentials: true });
             res.data.forEach((item: calendarEventBase) => {
-                const start = new Date(item.start);
-                const end = new Date(item.end);
+                let startDate = null;
+                if (item.startDate !== null) {
+                    startDate = new Date(item.startDate);
+                }
+                let endDate = null;
+                if (item.endDate !== null) {
+                    endDate = new Date(item.endDate);
+                }
+                let startDateTime = null;
+                if (item.startDateTime !== null) {
+                    startDateTime = new Date(item.startDateTime);
+                }
+                let endDateTime = null;
+                if (item.endDateTime !== null) {
+                    endDateTime = new Date(item.endDateTime);
+                }
+
                 const createdAt = new Date(item.createdAt);
                 const updatedAt = new Date(item.updatedAt);
-                start.setHours(start.getHours() - 9);
-                end.setHours(end.getHours() - 9);
-                createdAt.setHours(createdAt.getHours() - 9);
-                updatedAt.setHours(updatedAt.getHours() - 9);
+                // start.setHours(start.getHours() - 9);
+                // end.setHours(end.getHours() - 9);
+                // createdAt.setHours(createdAt.getHours() - 9);
+                // updatedAt.setHours(updatedAt.getHours() - 9);
                 if (!this.calendarEvents.has(item.id)) {
                     this.calendarEvents.set(item.id, {
                         id: item.id,
@@ -37,8 +52,10 @@ export const useEventStore = defineStore('calendarEvents', {
                         parentEventId: item.parentEventId,
                         childEventIdList: item.childEventIdList,
                         memo: item.memo,
-                        start: start,
-                        end: end,
+                        startDate: startDate,
+                        endDate: endDate,
+                        startDateTime: startDateTime,
+                        endDateTime: endDateTime,
                         createdAt: createdAt,
                         updatedAt: updatedAt
                     } as calendarEventBase);
