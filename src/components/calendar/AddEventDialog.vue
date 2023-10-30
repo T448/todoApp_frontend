@@ -28,7 +28,7 @@ const props = defineProps<{
     parentEventProjectName?: String,
     parentEventProjectColor?: String,
     parentEventId?: String,
-    start?: String
+    start?: string
 }>();
 
 const emits = defineEmits<{
@@ -41,10 +41,10 @@ const eventTitle: Ref<string | number | string[] | undefined> = ref();
 // const memo: Ref<string | number | string[] | undefined> = ref();
 const memo = ref('');
 const isAllDay = ref(true);
-const startDate: Ref<String | undefined> = ref(props.start);
-const startDatetimeLocal: Ref<String | undefined> = ref(props.start + "T00:00");
-const endDate: Ref<Date | undefined> = ref();
-const endDatetimeLocal: Ref<Date | undefined> = ref();
+const startDate: Ref<string | undefined> = ref(props.start);
+const startDateTime: Ref<string | undefined> = ref(props.start + "T00:00");
+const endDate: Ref<string | undefined> = ref();
+const endDateTime: Ref<string | undefined> = ref();
 
 
 const parentEventProjectIdRef = ref(props.parentEventProjectId);
@@ -61,53 +61,60 @@ const selectedProjectColor = computed(() => {
         return "#000000";
     }
 })
-console.log("parentEventProjectRef.value");
-console.log(props.parentEventProjectColor);
+
 const addEvent = () => {
-    console.log('startDate');
-    console.log(startDate.value);
-    let projectId = "";
+    let newEvent = {
+        name: eventTitle.value,
+        memo: memo.value,
+        projectId: "",
+        parentEventId: "",
+        startDate: "",
+        endDate: "",
+        startDateTime: "",
+        endDateTime: "",
+        timeZone: "UTC"
+    }
+
     if (parentEventProjectIdRef.value) {
         console.log("親イベントあり");
-        projectId = parentEventProjectIdRef.value.toString();
+        newEvent.projectId = parentEventProjectIdRef.value.toString()
     } else if (selectedProject.value?.id) {
         console.log("親イベントなし");
-        projectId = selectedProject.value?.id;
+        newEvent.projectId = selectedProject.value?.id;
     } else {
         alert("イベント追加に失敗");
         return;
     }
-    let start: String | undefined;
-    let end: String | undefined;
+
     if (isAllDay.value) {
-        start = startDate.value + "T0:00:00";
-        end = endDate.value + "T23:59:59";
+        if (startDate.value !== undefined && endDate.value !== undefined) {
+            newEvent.startDate = startDate.value;
+            newEvent.endDate = endDate.value;
+        }
+        else {
+            alert('日付を入力してください');
+            return;
+        }
     } else {
-        if (startDatetimeLocal.value !== undefined) {
-            start = startDatetimeLocal.value.toString() + ":00";
-            end = endDatetimeLocal.value?.toString() + ":59";
+        if (startDateTime.value !== undefined && endDateTime.value !== undefined) {
+            newEvent.startDateTime = (new Date(startDateTime.value)).toISOString();
+            newEvent.endDateTime = (new Date(endDateTime.value)).toISOString();
+        } else {
+            alert('日時を入力してください');
+            return;
         }
     }
-    let parentEventId = "";
+
     if (parentEventIdRef.value) {
-        parentEventId = parentEventIdRef.value.toString();
+        newEvent.parentEventId = parentEventIdRef.value.toString();
     }
-    console.log("start");
-    console.log(start);
-    console.log("parentEventId");
-    console.log(parentEventId);
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (tz !== null && tz !== undefined) {
+        newEvent.timeZone = tz;
+    }
 
     const cookies = getCookies();
     const header = { "sessionID": cookies.sessionID };
-    const newEvent = {
-        name: eventTitle.value,
-        memo: memo.value,
-        projectId: projectId,
-        parentEventId: parentEventId,
-        startDateTime: start,
-        endDateTime: end,
-        timeZone: "Asia/Tokyo"
-    }
     axios.post('http://localhost:8080/api/events', newEvent, { headers: header, withCredentials: true })
 
 }
@@ -137,9 +144,9 @@ watch(selectedTemplateId, () => {
                 <input type="date" v-model="endDate">
             </div>
             <div v-else>
-                <input type="datetime-local" v-model="startDatetimeLocal">
+                <input type="datetime-local" v-model="startDateTime">
                 <span style="color: white;margin-left: 10px;margin-right: 10px;">~</span>
-                <input type="datetime-local" v-model="endDatetimeLocal">
+                <input type="datetime-local" v-model="endDateTime">
             </div>
             <div>
                 <select v-model="selectedTemplateId">

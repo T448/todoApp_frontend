@@ -104,12 +104,28 @@ const computedCalendarEventList = computed(() => {
         const targetDate = new Date(ymd.year, ymd.month, ymd.date);
         const dateAfterTargetDate = new Date(ymd.year, ymd.month, ymd.date + 1);
         const targetEvents = calendarEventListInStore.filter((event) => {
-            let startDate = new Date(event.start);
-            let endDate = new Date(event.end);
-            return (
-                (targetDate <= startDate && startDate < dateAfterTargetDate)
-                || (targetDate <= endDate && endDate < dateAfterTargetDate)
-            );
+            let start: Date | undefined;
+            if (event.startDate !== null) {
+                start = new Date(event.startDate);
+            } else if (event.startDateTime !== null) {
+                start = new Date(event.startDateTime);
+            }
+            let end: Date | undefined;
+            if (event.endDate !== null) {
+                end = new Date(event.endDate);
+            } else if (event.endDateTime !== null) {
+                end = new Date(event.endDateTime);
+            }
+            if (start && end) {
+                return (
+                    (targetDate <= start && start < dateAfterTargetDate)
+                    || (targetDate <= end && end < dateAfterTargetDate)
+                    || (start <= targetDate && targetDate < end)
+                );
+            } else {
+                return false;
+            }
+
         })
         calendarEventList.push(targetEvents)
     })

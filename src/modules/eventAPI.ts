@@ -7,6 +7,8 @@ export type updateEventRequest = {
     name: String,
     memo: String,
     projectId: String,
+    startDate: String,
+    endDate: String,
     startDateTime: String,
     endDateTime: String,
     timeZone: String
