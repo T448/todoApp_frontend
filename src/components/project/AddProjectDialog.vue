@@ -23,8 +23,8 @@ const addNewProject = () => {
     const cookies = getCookies();
     const header = { "sessionID": cookies.sessionID };
     const projectTitleVal = projectTitle.value;
-    const memoVal = memo.value?.toString();
-    if (typeof projectTitleVal == "string" && projectTitle.value !== null && projectTitle.value !== "" && memoVal !== undefined) {
+    const memoVal = memo.value ? memo.value.toString() : "";
+    if (typeof projectTitleVal == "string" && projectTitle.value !== null && projectTitle.value !== "") {
         const newProject: projectRequest = {
             name: projectTitleVal,
             memo: memoVal
