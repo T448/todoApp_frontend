@@ -132,8 +132,7 @@ watch(selectedTemplateId, () => {
 <template>
     <div class="dialog">
         <div>
-            <textarea v-model="eventTitle" @input="eventTitle = $event.target.value" placeholder="イベント"
-                class="event-input"></textarea>
+            <textarea v-model="eventTitle" placeholder="イベント" class="event-input"></textarea>
             <div style="text-align: left;margin-left: 10px;">
                 <input v-model="isAllDay" id="all-day" type="checkbox" style="width: 20px;height: 20px;">
                 <label for="all-day">終日</label>

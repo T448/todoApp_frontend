@@ -45,9 +45,8 @@ const addNewProject = () => {
     <div class="dialog">
         <div>
             <h4>新規プロジェクト作成</h4>
-            <textarea v-model="projectTitle" @input="projectTitle = $event.target.value" placeholder="プロジェクト名"
-                class="project-input"></textarea>
-            <textarea v-model="memo" @input="memo = $event.target.value" placeholder="メモ" class="memo-input"></textarea>
+            <textarea v-model="projectTitle" placeholder="プロジェクト名" class="project-input"></textarea>
+            <textarea v-model="memo" placeholder="メモ" class="memo-input"></textarea>
         </div>
         <div>
             <button @click="addNewProject">追加</button>
