@@ -157,7 +157,7 @@ watch(selectedTemplateId, () => {
             </div>
 
             <div v-if="parentEventProjectColorRef">
-                <span v-bind:style="{ color: parentEventProjectColorRef }">●</span>
+                <span class="circle">●</span>
                 <span>{{ parentEventProjectNameRef }}</span>
             </div>
             <div v-if="!parentEventProjectNameRef">
@@ -250,5 +250,9 @@ textarea:focus-within {
 
 .md-editor {
     height: 400px;
+}
+
+.circle {
+    color: v-bind(parentEventProjectColorRef)
 }
 </style>
