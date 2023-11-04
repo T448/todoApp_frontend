@@ -25,4 +25,6 @@ dist-ssr
 
 .ssh/
 .env
+.env.development
+.env.production
 client*.json
