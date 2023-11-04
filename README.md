@@ -32,14 +32,9 @@
 - dev containerで`vue`のコンテナに入る
 ## 開発環境
 - vscodeのターミナルで`npm run dev`を実行する
-## 本番環境
-- vscodeのターミナルで以下の順に実行する
-```
-npm run build
-npm run preview
-```
 
 
+# 設定ファイル
 ### .env
 ```txt:.env
 VITE_CLIENT_ID="xxxxxxxx" // ここにGCPで発行したClient IDを記入する。
