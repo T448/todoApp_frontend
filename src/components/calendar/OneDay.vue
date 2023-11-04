@@ -15,9 +15,7 @@ const props = defineProps<{
     date: ymd,
     calendarEvents?: Array<calendarEventBase>,
 }>();
-const emits = defineEmits<{
-    (e: 'showAddEventDialog'): void
-}>();
+
 const eventsRef = computed(() => props.calendarEvents);
 const ymdStr = computed(() => {
     const yearStr = String(props.date.year);

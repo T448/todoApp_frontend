@@ -6,7 +6,7 @@ import axios from 'axios';
 const router = useRouter();
 
 const clientId: string = import.meta.env.VITE_CLIENT_ID;
-const redirectUri = encodeURI('http://localhost:5173/app');
+const redirectUri = encodeURI(import.meta.env.VITE_REDIRECT_URI);
 const scope = encodeURI('email profile openid https://www.googleapis.com/auth/calendar');
 const prompt = "select_account";
 const loginURL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code&access_type=offline&prompt=${prompt}`;
